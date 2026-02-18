@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 interface SplashScreenProps {
@@ -27,16 +27,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
   };
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Ambify</Text>
-        <Text style={styles.subtitle}>Clear air. Clear mind.</Text>
-      </View>
-      
-      <TouchableOpacity style={styles.button} onPress={handlePress}>
-        <Text style={styles.buttonText}>Continue</Text>
-      </TouchableOpacity>
-    </Animated.View>
+    <TouchableWithoutFeedback onPress={handlePress}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Ambify</Text>
+          <Text style={styles.subtitle}>Clear air. Clear mind.</Text>
+        </View>
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -66,16 +64,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Gotu-Regular',
   },
-  button: {
-    paddingHorizontal: 48,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#7cb342',
-  },
-  buttonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-    fontFamily: 'Golos-Text',
-  },
+
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 
 interface WelcomeScreenProps {
   onContinue: () => void;
@@ -7,20 +7,18 @@ interface WelcomeScreenProps {
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.appName}>Ambify</Text>
-      </View>
+    <TouchableWithoutFeedback onPress={onContinue}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.appName}>Ambify</Text>
+        </View>
 
-      <View style={styles.content}>
-        <Text style={styles.greeting}>Hello, Josh</Text>
-        <Text style={styles.subtitle}>Sync your space with your state of mind</Text>
+        <View style={styles.content}>
+          <Text style={styles.greeting}>Hello, Josh</Text>
+          <Text style={styles.subtitle}>Sync your space with your state of mind</Text>
+        </View>
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={onContinue}>
-        <Text style={styles.buttonText}>Go to Dashboard</Text>
-      </TouchableOpacity>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -62,17 +60,5 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     letterSpacing: -3,
   },
-  button: {
-    paddingHorizontal: 48,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#7cb342',
-    alignSelf: 'center',
-  },
-  buttonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-    fontFamily: 'Golos-Text',
-  },
+
 });
