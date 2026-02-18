@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { AnimatedBackground } from '../components/AnimatedBackground';
@@ -37,6 +37,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
           <Text style={styles.title}>Ambify</Text>
           <Text style={styles.subtitle}>Clear air. Clear mind.</Text>
         </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handlePress} style={styles.nextButton}>
+            <Text style={styles.nextIcon}>›</Text>
+          </TouchableOpacity>
+        </View>
       </Animated.View>
     </TouchableWithoutFeedback>
   );
@@ -55,6 +61,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    zIndex: 1,
+  },
+  nextButton: {
+    padding: 12,
+  },
+  nextIcon: {
+    fontSize: 40,
+    fontWeight: '300',
+    color: '#fff',
+    fontFamily: 'Golos-Text',
   },
   title: {
     fontSize: 64,
