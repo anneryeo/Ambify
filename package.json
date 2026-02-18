@@ -9,16 +9,16 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-navigation/native": "latest",
+    "@react-navigation/native-stack": "^7.13.0",
+    "@react-navigation/stack": "latest",
     "expo": "latest",
     "expo-font": "latest",
-    "react": "latest",
-    "react-native": "latest",
-    "@react-navigation/native": "latest",
-    "@react-navigation/stack": "latest",
-    "react-native-screens": "latest",
+    "expo-linear-gradient": "~15.0.8",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
     "react-native-safe-area-context": "latest",
-    "react-native-linear-gradient": "latest",
-    "expo-linear-gradient": "latest"
+    "react-native-screens": "~4.16.0"
   },
   "devDependencies": {
     "@babel/core": "latest",
