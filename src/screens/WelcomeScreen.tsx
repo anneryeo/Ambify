@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   appName: {
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: '600',
     color: '#fff',
     fontFamily: 'Gotu-Regular',
@@ -47,17 +47,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   greeting: {
-    fontSize: 28,
+    fontSize: 64,
     fontWeight: '600',
     color: '#fff',
     marginBottom: 8,
-    fontFamily: 'Gotu-Regular',
+    fontFamily: 'Golos-Text',
+    letterSpacing: -6,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 34,
     color: '#aaa',
     fontFamily: 'Golos-Text',
-    lineHeight: 20,
+    lineHeight: 30,
+    letterSpacing: -3,
   },
   button: {
     paddingHorizontal: 48,

@@ -24,7 +24,7 @@ export const MainDashboard: React.FC = () => {
       <View style={styles.content}>
         <View style={styles.circleContainer}>
           <LinearGradient
-            colors={['#c6ff00', '#76ff03']}
+            colors={['#EAF371', '#95CC47']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientCircle}
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   appName: {
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: '600',
     color: '#fff',
     fontFamily: 'Gotu-Regular',
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     fontSize: 72,
     fontWeight: '700',
     color: '#fff',
-    fontFamily: 'Gotu-Regular',
+    fontFamily: 'Golos-Text',
   },
   unit: {
     fontSize: 18,
@@ -100,19 +100,21 @@ const styles = StyleSheet.create({
   infoContainer: {
     alignItems: 'center',
     paddingHorizontal: 16,
+    
   },
   qualityText: {
     fontSize: 24,
     fontWeight: '600',
     color: '#fff',
     marginBottom: 12,
-    fontFamily: 'Gotu-Regular',
+    fontFamily: 'Golos-Text',
   },
   descriptionText: {
-    fontSize: 14,
+    fontSize: 20,
     color: '#bbb',
     textAlign: 'center',
     lineHeight: 20,
     fontFamily: 'Golos-Text',
+    letterSpacing: -1,
   },
 });

@@ -46,15 +46,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 48,
+    fontSize: 64,
     fontWeight: '600',
     color: '#fff',
-    marginBottom: 16,
+    marginBottom: -26,
     fontFamily: 'Gotu-Regular',
+    
   },
   subtitle: {
     fontSize: 16,
-    color: '#ccc',
+    color: '#fff',
     fontFamily: 'Gotu-Regular',
   },
   button: {
