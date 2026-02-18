@@ -12,7 +12,7 @@ export const MainDashboard: React.FC = () => {
   const co2Data: CO2Indicator = {
     value: 555,
     quality: 'ppm',
-    description: 'Your air is crisp.',
+    description: 'The air is crisp.',
   };
 
   return (
@@ -35,7 +35,7 @@ export const MainDashboard: React.FC = () => {
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.qualityText}>{co2Data.quality}</Text>
+          <Text style={styles.qualityText}>{co2Data.description}</Text>
           <Text style={styles.descriptionText}>
             The CO2 levels are low. This is the perfect time for deep focus or creative work.
           </Text>
