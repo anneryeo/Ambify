@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 34,
+    fontWeight: '400',
     color: '#aaa',
     fontFamily: 'Golos-Text',
     lineHeight: 30,

@@ -24,7 +24,7 @@ export const MainDashboard: React.FC = () => {
       <View style={styles.content}>
         <View style={styles.circleContainer}>
           <LinearGradient
-            colors={['#EAF371', '#95CC47']}
+            colors={['#EAF371', '#507e10']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientCircle}
@@ -86,13 +86,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   co2Value: {
-    fontSize: 72,
-    fontWeight: '700',
+    fontSize: 64,
+    fontWeight: '100',
     color: '#fff',
     fontFamily: 'Golos-Text',
+    letterSpacing: -6,
   },
   unit: {
     fontSize: 18,
+    fontWeight: '100',
     color: '#fff',
     fontFamily: 'Golos-Text',
     marginTop: 4,
@@ -104,13 +106,15 @@ const styles = StyleSheet.create({
   },
   qualityText: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: '100',
     color: '#fff',
     marginBottom: 12,
     fontFamily: 'Golos-Text',
+    letterSpacing: -1,
   },
   descriptionText: {
-    fontSize: 20,
+    fontSize: 20,    
+    fontWeight: '100',    
     color: '#bbb',
     textAlign: 'center',
     lineHeight: 20,
