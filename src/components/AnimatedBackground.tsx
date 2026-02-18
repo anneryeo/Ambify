@@ -135,7 +135,7 @@ export const AnimatedBackground: React.FC = () => {
         >
           {/* SVG Circle with Radial Gradient */}
           {/* width/height: Size of the circle (500 = large, reduce for smaller) */}
-          <Svg width={500} height={500} viewBox="0 0 500 500">
+          <Svg width={800} height={800} viewBox="0 0 800 800">
             <Defs>
               {/* Radial Gradient: Controls the fade effect from center to edges */}
               <RadialGradient id={`grad-${ball.id}`} cx="50%" cy="50%" r="50%">
@@ -151,7 +151,7 @@ export const AnimatedBackground: React.FC = () => {
               </RadialGradient>
             </Defs>
             {/* Circle: r="250" is the radius (half of width/height). Keep matching SVG dimensions */}
-            <Circle cx="250" cy="250" r="250" fill={`url(#grad-${ball.id})`} />
+            <Circle cx="400" cy="400" r="400" fill={`url(#grad-${ball.id})`} />
           </Svg>
         </Animated.View>
       ))}
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   // Increase both for larger circles, decrease for smaller
   blurBallWrapper: {
     position: 'absolute',
-    width: 500,
-    height: 500,
+    width: 800,
+    height: 800,
   },
 });
