@@ -16,7 +16,7 @@ export default function App() {
         // Load fonts
         await Font.loadAsync({
           'Gotu-Regular': require('./assets/fonts/Gotu-Regular.ttf'),
-          'Golos-Text': require('./assets/fonts/GolosText-Regular.ttf'),
+          'Golos-Text': require('./assets/fonts/GolosText-VariableFont_wght.ttf'),
         });
       } catch (e) {
         console.warn(e);
