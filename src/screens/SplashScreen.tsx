@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
 interface SplashScreenProps {
@@ -7,13 +7,21 @@ interface SplashScreenProps {
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
+  const [fadeAnim] = useState(new Animated.Value(1));
+
   const handlePress = () => {
-    onContinue();
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {
+      onContinue();
+    });
   };
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
-      <View style={styles.container}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         <AnimatedBackground />
 
         <View style={styles.content}>
@@ -26,7 +34,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
             <Text style={styles.nextIcon}>›</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </TouchableWithoutFeedback>
   );
 };

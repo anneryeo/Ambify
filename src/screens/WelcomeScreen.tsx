@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
@@ -8,15 +8,30 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
+  const [fadeAnim] = useState(new Animated.Value(0));
   const navigation = useNavigation();
 
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const handleContinue = () => {
-    onContinue();
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {
+      onContinue();
+    });
   };
 
   return (
     <TouchableWithoutFeedback onPress={handleContinue}>
-      <View style={styles.container}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         <AnimatedBackground />
 
         <View style={styles.header}>
@@ -36,7 +51,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
             <Text style={styles.nextIcon}>›</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </TouchableWithoutFeedback>
   );
 };

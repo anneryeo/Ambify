@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -9,8 +9,16 @@ const PRACTICE_LEVELS = [555, 921, 1341, 1802];
 
 export const MainDashboard: React.FC = () => {
   const [levelIndex, setLevelIndex] = useState(0);
-  const [fadeAnim] = useState(new Animated.Value(1));
+  const [fadeAnim] = useState(new Animated.Value(0));
   const navigation = useNavigation();
+  
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  }, []);
   
   const co2Value = PRACTICE_LEVELS[levelIndex];
   
@@ -25,14 +33,14 @@ export const MainDashboard: React.FC = () => {
   const handleCycleLevel = () => {
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 200,
+      duration: 800,
       useNativeDriver: true,
     }).start(() => {
       setLevelIndex((prev) => (prev + 1) % PRACTICE_LEVELS.length);
       
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 200,
+        duration: 800,
         useNativeDriver: true,
       }).start();
     });
