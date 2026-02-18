@@ -13,12 +13,12 @@ interface BlurBall {
 // Circle Appearance:
 //   - stopOpacity values (0.6, 0.2, 0) → Change brightness/fade intensity
 //   - offset="70%" → Where fade starts (0-100%)
-//   - width/height (500) → Circle size
+//   - width/height (800) → Circle size
 //   - #B3E967 → Circle color
 //
-// Circle Movement:
-//   - Math.random() * 600 - 200 → X-axis spread range
-//   - Math.random() * 1400 - 200 → Y-axis spread range
+// Circle Movement (constrained to keep blobs visible):
+//   - Math.random() * 400 - 100 → X-axis range (-100 to 300)
+//   - Math.random() * 1000 - 200 → Y-axis range (-200 to 800)
 //   - 6000 + Math.random() * 4000 → Speed (milliseconds)
 //   - Math.random() * 0.5 + 0.5 → Size variation
 //
@@ -27,48 +27,14 @@ interface BlurBall {
 //   - blurBalls array → Add/remove circles (each needs unique id)
 // ================================
 
-const createRandomWaypoints = (ballId: number): Animated.CompositeAnimation => {
-  const ball = {
-    x: new Animated.Value(Math.random() * 300),
-    y: new Animated.Value(Math.random() * 800),
-    scale: new Animated.Value(Math.random() * 0.4 + 0.6),
-  };
-
-  const animations: Animated.CompositeAnimation[] = [];
-
-  // Create 10 continuous waypoints per cycle
-  for (let i = 0; i < 10; i++) {
-    animations.push(
-      Animated.parallel([
-        Animated.timing(ball.x, {
-          toValue: Math.random() * 350 - 100,
-          duration: 5000 + Math.random() * 3000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(ball.y, {
-          toValue: Math.random() * 900 - 100,
-          duration: 5000 + Math.random() * 3000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(ball.scale, {
-          toValue: Math.random() * 0.4 + 0.6,
-          duration: 5000 + Math.random() * 3000,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-  }
-
-  return Animated.loop(Animated.sequence(animations), { iterations: -1 });
-};
-
 export const AnimatedBackground: React.FC = () => {
   // TWEAK: Add/remove objects from this array to create more or fewer circles
   // Each circle needs id, x, y, and scale Animated values
+  // Initial positions are constrained to keep blobs visible on screen
   const [blurBalls] = useState<BlurBall[]>([
     { id: 1, x: new Animated.Value(50), y: new Animated.Value(100), scale: new Animated.Value(1) },
-    { id: 2, x: new Animated.Value(250), y: new Animated.Value(400), scale: new Animated.Value(0.8) },
-    { id: 3, x: new Animated.Value(150), y: new Animated.Value(500), scale: new Animated.Value(0.6) },
+    { id: 2, x: new Animated.Value(200), y: new Animated.Value(400), scale: new Animated.Value(0.8) },
+    { id: 3, x: new Animated.Value(100), y: new Animated.Value(600), scale: new Animated.Value(0.6) },
   ]);
 
   useEffect(() => {
@@ -79,18 +45,20 @@ export const AnimatedBackground: React.FC = () => {
       for (let i = 0; i < 15; i++) {
         sequence.push(
           Animated.parallel([
-            // X-axis movement: range is Math.random() * 600 - 200 
-            // TWEAK: Increase 600 for wider horizontal spread, -200 is offset
+            // X-axis movement: constrained to keep blobs visible on screen
+            // TWEAK: range is Math.random() * 400 - 100 (from -100 to 300)
+            // Keeps center within screen width while accounting for 800px blob size
             Animated.timing(ball.x, {
-              toValue: Math.random() * 600 - 200,
+              toValue: Math.random() * 400 - 100,
               // TWEAK: duration controls speed (lower = faster). Add/subtract range for variation
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
-            // Y-axis movement: range is Math.random() * 1400 - 200
-            // TWEAK: Increase 1400 for taller vertical spread, -200 is offset
+            // Y-axis movement: constrained to keep blobs visible on screen
+            // TWEAK: range is Math.random() * 1000 - 200 (from -200 to 800)
+            // Keeps center within screen height while accounting for 800px blob size
             Animated.timing(ball.y, {
-              toValue: Math.random() * 1400 - 200,
+              toValue: Math.random() * 1000 - 200,
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
