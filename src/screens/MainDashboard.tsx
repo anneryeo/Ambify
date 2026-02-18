@@ -81,7 +81,7 @@ export const MainDashboard: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0c1609',
+    backgroundColor: '#000000',
     paddingHorizontal: 24,
     paddingVertical: 20,
   },

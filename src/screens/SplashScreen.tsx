@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
 interface SplashScreenProps {
@@ -9,28 +7,13 @@ interface SplashScreenProps {
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
-  const [fadeAnim] = useState(new Animated.Value(1));
-
-  useFocusEffect(
-    React.useCallback(() => {
-      // Reset animation when screen comes back into focus
-      fadeAnim.setValue(1);
-    }, [fadeAnim])
-  );
-
   const handlePress = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      onContinue();
-    });
+    onContinue();
   };
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
-      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+      <View style={styles.container}>
         <AnimatedBackground />
 
         <View style={styles.content}>
@@ -43,7 +26,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
             <Text style={styles.nextIcon}>›</Text>
           </TouchableOpacity>
         </View>
-      </Animated.View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -51,7 +34,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0c1609',
+    backgroundColor: '#000000',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 60,

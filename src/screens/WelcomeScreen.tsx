@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, Animated, TouchableOpacity } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
 interface WelcomeScreenProps {
@@ -8,24 +8,15 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
-  const [fadeAnim] = useState(new Animated.Value(0));
   const navigation = useNavigation();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      // Reset to transparent and fade in when screen comes into focus
-      fadeAnim.setValue(0);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }, [fadeAnim])
-  );
+  const handleContinue = () => {
+    onContinue();
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={onContinue}>
-      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <TouchableWithoutFeedback onPress={handleContinue}>
+      <View style={styles.container}>
         <AnimatedBackground />
 
         <View style={styles.header}>
@@ -41,11 +32,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Text style={styles.backIcon}>‹</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onContinue} style={styles.nextButton}>
+          <TouchableOpacity onPress={handleContinue} style={styles.nextButton}>
             <Text style={styles.nextIcon}>›</Text>
           </TouchableOpacity>
         </View>
-      </Animated.View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -53,7 +44,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0c1609',
+    backgroundColor: '#000000',
     paddingHorizontal: 24,
     paddingVertical: 40,
   },
