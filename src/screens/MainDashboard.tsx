@@ -1,47 +1,71 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { getCO2UIData } from '../utils/co2Utils';
 
-interface CO2Indicator {
-  value: number;
-  quality: string;
-  description: string;
-}
+const PRACTICE_LEVELS = [555, 921, 1341, 1802];
 
 export const MainDashboard: React.FC = () => {
-  const co2Data: CO2Indicator = {
-    value: 555,
+  const [levelIndex, setLevelIndex] = useState(0);
+  const [fadeAnim] = useState(new Animated.Value(1));
+  
+  const co2Value = PRACTICE_LEVELS[levelIndex];
+  
+  const uiData = getCO2UIData(co2Value);
+  
+  const co2Data = {
+    value: co2Value,
     quality: 'ppm',
-    description: 'The air is crisp.',
+    description: `The air is ${uiData.label.toLowerCase()}.`,
+  };
+
+  const handleCycleLevel = () => {
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.delay(100),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    setLevelIndex((prev) => (prev + 1) % PRACTICE_LEVELS.length);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.appName}>Ambify</Text>
-      </View>
-
-      <View style={styles.content}>
-        <View style={styles.circleContainer}>
-          <LinearGradient
-            colors={['#EAF371', '#507e10']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradientCircle}
-          >
-            <Text style={styles.co2Value}>{co2Data.value}</Text>
-            <Text style={styles.unit}>{co2Data.quality}</Text>
-          </LinearGradient>
+    <TouchableWithoutFeedback onPress={handleCycleLevel}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.appName}>Ambify</Text>
         </View>
 
-        <View style={styles.infoContainer}>
-          <Text style={styles.qualityText}>{co2Data.description}</Text>
-          <Text style={styles.descriptionText}>
-            The CO2 levels are low. This is the perfect time for deep focus or creative work.
-          </Text>
-        </View>
+        <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+          <View style={styles.circleContainer}>
+            <LinearGradient
+              colors={['#EAF371', uiData.endColor]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientCircle}
+            >
+              <Text style={styles.co2Value}>{co2Data.value}</Text>
+              <Text style={styles.unit}>{co2Data.quality}</Text>
+            </LinearGradient>
+          </View>
+
+          <View style={styles.infoContainer}>
+            <Text style={styles.qualityText}>{co2Data.description}</Text>
+            <Text style={styles.descriptionText}>
+              {uiData.tip}
+            </Text>
+          </View>
+        </Animated.View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
