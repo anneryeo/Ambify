@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SplashScreen } from '../screens/SplashScreen';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { MainDashboard } from '../screens/MainDashboard';
+import { sceneTransitionConfig } from '../utils/transitionConfig';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -20,13 +21,11 @@ export const AppNavigator: React.FC = () => {
         screenOptions={{
           headerShown: false,
           animationEnabled: true,
+          ...sceneTransitionConfig,
         }}
       >
         <Stack.Screen
           name="Splash"
-          options={{
-            animationEnabled: false,
-          }}
         >
           {(props) => (
             <SplashScreen onContinue={() => {
