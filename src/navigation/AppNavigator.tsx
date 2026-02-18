@@ -26,25 +26,23 @@ export const AppNavigator: React.FC<{ isSplashComplete: boolean; setSplashComple
           cardStyle: { backgroundColor: 'transparent' },
         }}
       >
-        {!isSplashComplete ? (
-          <Stack.Screen
-            name="Splash"
-            options={{
-              animationEnabled: false,
-            }}
-          >
-            {(props) => (
-              <SplashScreen onContinue={() => setSplashComplete(true)} />
-            )}
-          </Stack.Screen>
-        ) : (
-          <>
-            <Stack.Screen name="Welcome">
-              {(props) => <WelcomeScreen onContinue={() => props.navigation.navigate('Dashboard')} />}
-            </Stack.Screen>
-            <Stack.Screen name="Dashboard" component={MainDashboard} />
-          </>
-        )}
+        <Stack.Screen
+          name="Splash"
+          options={{
+            animationEnabled: false,
+          }}
+        >
+          {(props) => (
+            <SplashScreen onContinue={() => {
+              setSplashComplete(true);
+              props.navigation.navigate('Welcome');
+            }} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Welcome">
+          {(props) => <WelcomeScreen onContinue={() => props.navigation.navigate('Dashboard')} />}
+        </Stack.Screen>
+        <Stack.Screen name="Dashboard" component={MainDashboard} />
       </Stack.Navigator>
     </NavigationContainer>
   );

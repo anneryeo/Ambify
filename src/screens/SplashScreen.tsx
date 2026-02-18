@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: -26,
     fontFamily: 'Gotu-Regular',
-    
+    letterSpacing: -6,
   },
   subtitle: {
     fontSize: 16,
