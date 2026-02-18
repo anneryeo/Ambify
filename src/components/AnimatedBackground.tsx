@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 
 interface BlurBall {
   id: number;
@@ -94,7 +95,7 @@ export const AnimatedBackground: React.FC = () => {
         <Animated.View
           key={ball.id}
           style={[
-            styles.blurBall,
+            styles.blurBallWrapper,
             {
               transform: [
                 { translateX: ball.x },
@@ -103,7 +104,18 @@ export const AnimatedBackground: React.FC = () => {
               ],
             },
           ]}
-        />
+        >
+          <Svg width={500} height={500} viewBox="0 0 500 500">
+            <Defs>
+              <RadialGradient id={`grad-${ball.id}`} cx="50%" cy="50%" r="50%">
+                <Stop offset="0%" stopColor="#B3E967" stopOpacity="0.6" />
+                <Stop offset="70%" stopColor="#B3E967" stopOpacity="0.2" />
+                <Stop offset="100%" stopColor="#B3E967" stopOpacity="0" />
+              </RadialGradient>
+            </Defs>
+            <Circle cx="250" cy="250" r="250" fill={`url(#grad-${ball.id})`} />
+          </Svg>
+        </Animated.View>
       ))}
     </View>
   );
@@ -119,17 +131,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     zIndex: 0,
   },
-  blurBall: {
+  blurBallWrapper: {
     position: 'absolute',
     width: 500,
     height: 500,
-    borderRadius: 250,
-    backgroundColor: '#B3E967',
-    opacity: 0.30,
-    shadowColor: '#B3E967',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 120,
-    elevation: 5,
   },
 });
