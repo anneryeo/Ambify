@@ -20,21 +20,19 @@ export const MainDashboard: React.FC = () => {
   };
 
   const handleCycleLevel = () => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.delay(100),
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      setLevelIndex((prev) => (prev + 1) % PRACTICE_LEVELS.length);
+      
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 300,
+        duration: 200,
         useNativeDriver: true,
-      }),
-    ]).start();
-
-    setLevelIndex((prev) => (prev + 1) % PRACTICE_LEVELS.length);
+      }).start();
+    });
   };
 
   return (
