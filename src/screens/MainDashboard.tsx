@@ -48,7 +48,7 @@ export const MainDashboard: React.FC = () => {
         <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
           <View style={styles.circleContainer}>
             <LinearGradient
-              colors={['#EAF371', uiData.endColor]}
+              colors={['rgba(255, 255, 255, 0.1)', uiData.endColor]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.gradientCircle}
@@ -73,7 +73,7 @@ export const MainDashboard: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2a3a2a',
+    backgroundColor: '#1a1a1a',
     paddingHorizontal: 24,
     paddingVertical: 20,
   },
@@ -100,11 +100,11 @@ const styles = StyleSheet.create({
     borderRadius: 140,
     marginBottom: 40,
     opacity: 0.9,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 15,
+    //shadowColor: '#000',
+    //shadowOffset: { width: 0, height: 10 },
+    //shadowOpacity: 0.3,
+    //shadowRadius: 20,
+    //elevation: 15,
   },
   gradientCircle: {
     width: '100%',

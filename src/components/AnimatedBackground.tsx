@@ -59,12 +59,12 @@ export const AnimatedBackground: React.FC = () => {
         sequence.push(
           Animated.parallel([
             Animated.timing(ball.x, {
-              toValue: Math.random() * 350 - 100,
+              toValue: Math.random() * 600 - 200,
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
             Animated.timing(ball.y, {
-              toValue: Math.random() * 1000 - 100,
+              toValue: Math.random() * 1400 - 200,
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
     opacity: 0.30,
     shadowColor: '#B3E967',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 40,
+    shadowOpacity: 0.25,
+    shadowRadius: 120,
     elevation: 5,
   },
 });
