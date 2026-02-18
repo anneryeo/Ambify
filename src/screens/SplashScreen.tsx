@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
 interface SplashScreenProps {
@@ -8,6 +9,13 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
   const [fadeAnim] = useState(new Animated.Value(1));
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset to fully visible when navigating back to this screen
+      fadeAnim.setValue(1);
+    }, [fadeAnim])
+  );
 
   const handlePress = () => {
     Animated.timing(fadeAnim, {

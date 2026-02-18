@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getCO2UIData } from '../utils/co2Utils';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
@@ -19,6 +19,18 @@ export const MainDashboard: React.FC = () => {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // When navigating back to this screen, reset and fade in
+      fadeAnim.setValue(0);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
+    }, [fadeAnim])
+  );
   
   const co2Value = PRACTICE_LEVELS[levelIndex];
   
