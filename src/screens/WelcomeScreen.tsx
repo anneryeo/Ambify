@@ -41,6 +41,16 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
     });
   };
 
+  const handleBack = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {
+      navigation.goBack();
+    });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={handleContinue}>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
@@ -56,7 +66,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Text style={styles.backIcon}>‹</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleContinue} style={styles.nextButton}>

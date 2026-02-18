@@ -58,6 +58,16 @@ export const MainDashboard: React.FC = () => {
     });
   };
 
+  const handleBack = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {
+      navigation.goBack();
+    });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={handleCycleLevel}>
       <View style={styles.container}>
@@ -89,7 +99,7 @@ export const MainDashboard: React.FC = () => {
         </Animated.View>
 
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Text style={styles.backIcon}>‹</Text>
           </TouchableOpacity>
         </View>
