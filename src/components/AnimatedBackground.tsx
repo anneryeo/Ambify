@@ -8,50 +8,85 @@ interface BlurBall {
   scale: Animated.Value;
 }
 
+const createRandomWaypoints = (ballId: number): Animated.CompositeAnimation => {
+  const ball = {
+    x: new Animated.Value(Math.random() * 300),
+    y: new Animated.Value(Math.random() * 800),
+    scale: new Animated.Value(Math.random() * 0.4 + 0.6),
+  };
+
+  const animations: Animated.CompositeAnimation[] = [];
+
+  // Create 10 continuous waypoints per cycle
+  for (let i = 0; i < 10; i++) {
+    animations.push(
+      Animated.parallel([
+        Animated.timing(ball.x, {
+          toValue: Math.random() * 350 - 100,
+          duration: 5000 + Math.random() * 3000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(ball.y, {
+          toValue: Math.random() * 900 - 100,
+          duration: 5000 + Math.random() * 3000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(ball.scale, {
+          toValue: Math.random() * 0.4 + 0.6,
+          duration: 5000 + Math.random() * 3000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+  }
+
+  return Animated.loop(Animated.sequence(animations), { iterations: -1 });
+};
+
 export const AnimatedBackground: React.FC = () => {
   const [blurBalls] = useState<BlurBall[]>([
-    { id: 1, x: new Animated.Value(100), y: new Animated.Value(100), scale: new Animated.Value(1) },
+    { id: 1, x: new Animated.Value(50), y: new Animated.Value(100), scale: new Animated.Value(1) },
     { id: 2, x: new Animated.Value(250), y: new Animated.Value(400), scale: new Animated.Value(0.8) },
     { id: 3, x: new Animated.Value(150), y: new Animated.Value(500), scale: new Animated.Value(0.6) },
   ]);
 
   useEffect(() => {
-    const animations = blurBalls.map((ball, index) => {
-      const delay = index * 1000;
-      
-      return Animated.loop(
-        Animated.sequence([
+    const animations = blurBalls.map((ball) => {
+      // Create continuous looping animation for each ball
+      const sequence: Animated.CompositeAnimation[] = [];
+
+      for (let i = 0; i < 15; i++) {
+        sequence.push(
           Animated.parallel([
             Animated.timing(ball.x, {
-              toValue: Math.random() * 200 + 50,
-              duration: 8000,
+              toValue: Math.random() * 350 - 100,
+              duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
             Animated.timing(ball.y, {
-              toValue: Math.random() * 600 + 50,
-              duration: 8000,
+              toValue: Math.random() * 1000 - 100,
+              duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
             Animated.timing(ball.scale, {
-              toValue: Math.random() * 0.4 + 0.6,
-              duration: 8000,
+              toValue: Math.random() * 0.5 + 0.5,
+              duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
-          ]),
-        ]),
-        { iterations: -1 }
-      );
+          ])
+        );
+      }
+
+      return Animated.loop(Animated.sequence(sequence), { iterations: -1 });
     });
 
-    // Start animations with staggered delay
-    setTimeout(() => {
-      animations.forEach((anim) => anim.start());
-    }, 0);
+    // Start all animations
+    animations.forEach((anim) => anim.start());
 
     return () => {
       animations.forEach((anim) => anim.stop?.());
     };
-  }, []);
+  }, [blurBalls]);
 
   return (
     <View style={styles.container}>
@@ -90,7 +125,7 @@ const styles = StyleSheet.create({
     height: 500,
     borderRadius: 250,
     backgroundColor: '#B3E967',
-    opacity: 0.08,
+    opacity: 0.30,
     shadowColor: '#B3E967',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.15,
