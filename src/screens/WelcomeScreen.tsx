@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../components/AnimatedBackground';
 
 interface WelcomeScreenProps {
   onContinue: () => void;
@@ -10,13 +10,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
   return (
     <TouchableWithoutFeedback onPress={onContinue}>
       <View style={styles.container}>
-        <LinearGradient
-          colors={['rgba(169, 247, 80, 0.15)', 'rgba(57, 61, 47, 0.4)', 'rgba(32, 36, 33, 0.8)']}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          style={styles.radialBlur}
-        />
-        
+        <AnimatedBackground />
+
         <View style={styles.header}>
           <Text style={styles.appName}>Ambify</Text>
         </View>
@@ -36,14 +31,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
     paddingHorizontal: 24,
     paddingVertical: 40,
-  },
-  radialBlur: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 0,
   },
   header: {
     alignItems: 'center',

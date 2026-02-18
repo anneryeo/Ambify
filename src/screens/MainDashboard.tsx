@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getCO2UIData } from '../utils/co2Utils';
+import { AnimatedBackground } from '../components/AnimatedBackground';
 
 const PRACTICE_LEVELS = [555, 921, 1341, 1802];
 
@@ -38,12 +39,7 @@ export const MainDashboard: React.FC = () => {
   return (
     <TouchableWithoutFeedback onPress={handleCycleLevel}>
       <View style={styles.container}>
-        <LinearGradient
-          colors={['rgba(169, 247, 80, 0.15)', 'rgba(57, 61, 47, 0.4)', 'rgba(32, 36, 33, 0.8)']}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          style={styles.radialBlur}
-        />
+        <AnimatedBackground />
         
         <View style={styles.header}>
           <Text style={styles.appName}>Ambify</Text>
@@ -80,14 +76,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#2a3a2a',
     paddingHorizontal: 24,
     paddingVertical: 20,
-  },
-  radialBlur: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 0,
   },
   header: {
     alignItems: 'center',
