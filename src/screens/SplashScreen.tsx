@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface SplashScreenProps {
   onContinue: () => void;
@@ -7,6 +8,13 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
   const [fadeAnim] = useState(new Animated.Value(1));
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset animation when screen comes back into focus
+      fadeAnim.setValue(1);
+    }, [fadeAnim])
+  );
 
   const handlePress = () => {
     Animated.timing(fadeAnim, {

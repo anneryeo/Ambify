@@ -13,17 +13,13 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const AppNavigator: React.FC<{ isSplashComplete: boolean; setSplashComplete: (complete: boolean) => void }> = ({
-  isSplashComplete,
-  setSplashComplete,
-}) => {
+export const AppNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
           animationEnabled: true,
-          cardStyle: { backgroundColor: 'transparent' },
         }}
       >
         <Stack.Screen
@@ -34,7 +30,6 @@ export const AppNavigator: React.FC<{ isSplashComplete: boolean; setSplashComple
         >
           {(props) => (
             <SplashScreen onContinue={() => {
-              setSplashComplete(true);
               props.navigation.navigate('Welcome');
             }} />
           )}

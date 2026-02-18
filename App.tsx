@@ -5,7 +5,6 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 
 export default function App() {
   const [isFontsLoaded, setIsFontsLoaded] = useState(false);
-  const [isSplashComplete, setIsSplashComplete] = useState(false);
 
   useEffect(() => {
     async function prepare() {
@@ -31,7 +30,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }}>
-      <AppNavigator isSplashComplete={isSplashComplete} setSplashComplete={setIsSplashComplete} />
+      <AppNavigator />
     </View>
   );
 }
