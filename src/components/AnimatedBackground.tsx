@@ -9,6 +9,24 @@ interface BlurBall {
   scale: Animated.Value;
 }
 
+// ===== QUICK TWEAKING GUIDE =====
+// Circle Appearance:
+//   - stopOpacity values (0.6, 0.2, 0) → Change brightness/fade intensity
+//   - offset="70%" → Where fade starts (0-100%)
+//   - width/height (500) → Circle size
+//   - #B3E967 → Circle color
+//
+// Circle Movement:
+//   - Math.random() * 600 - 200 → X-axis spread range
+//   - Math.random() * 1400 - 200 → Y-axis spread range
+//   - 6000 + Math.random() * 4000 → Speed (milliseconds)
+//   - Math.random() * 0.5 + 0.5 → Size variation
+//
+// Animation Behavior:
+//   - for (let i = 0; i < 15; i++) → Number of waypoints before repeating
+//   - blurBalls array → Add/remove circles (each needs unique id)
+// ================================
+
 const createRandomWaypoints = (ballId: number): Animated.CompositeAnimation => {
   const ball = {
     x: new Animated.Value(Math.random() * 300),
@@ -45,6 +63,8 @@ const createRandomWaypoints = (ballId: number): Animated.CompositeAnimation => {
 };
 
 export const AnimatedBackground: React.FC = () => {
+  // TWEAK: Add/remove objects from this array to create more or fewer circles
+  // Each circle needs id, x, y, and scale Animated values
   const [blurBalls] = useState<BlurBall[]>([
     { id: 1, x: new Animated.Value(50), y: new Animated.Value(100), scale: new Animated.Value(1) },
     { id: 2, x: new Animated.Value(250), y: new Animated.Value(400), scale: new Animated.Value(0.8) },
@@ -59,16 +79,23 @@ export const AnimatedBackground: React.FC = () => {
       for (let i = 0; i < 15; i++) {
         sequence.push(
           Animated.parallel([
+            // X-axis movement: range is Math.random() * 600 - 200 
+            // TWEAK: Increase 600 for wider horizontal spread, -200 is offset
             Animated.timing(ball.x, {
               toValue: Math.random() * 600 - 200,
+              // TWEAK: duration controls speed (lower = faster). Add/subtract range for variation
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
+            // Y-axis movement: range is Math.random() * 1400 - 200
+            // TWEAK: Increase 1400 for taller vertical spread, -200 is offset
             Animated.timing(ball.y, {
               toValue: Math.random() * 1400 - 200,
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
+            // Scale (size): ranges from 0.5 to 1.0
+            // TWEAK: Change Math.random() * 0.5 + 0.5 to adjust size variation
             Animated.timing(ball.scale, {
               toValue: Math.random() * 0.5 + 0.5,
               duration: 6000 + Math.random() * 4000,
@@ -77,6 +104,7 @@ export const AnimatedBackground: React.FC = () => {
           ])
         );
       }
+      // TWEAK: Change loop number (15) to control how many waypoints before pattern repeats (more = longer before cycle)
 
       return Animated.loop(Animated.sequence(sequence), { iterations: -1 });
     });
@@ -105,14 +133,24 @@ export const AnimatedBackground: React.FC = () => {
             },
           ]}
         >
+          {/* SVG Circle with Radial Gradient */}
+          {/* width/height: Size of the circle (500 = large, reduce for smaller) */}
           <Svg width={500} height={500} viewBox="0 0 500 500">
             <Defs>
+              {/* Radial Gradient: Controls the fade effect from center to edges */}
               <RadialGradient id={`grad-${ball.id}`} cx="50%" cy="50%" r="50%">
+                {/* First Stop: Center of circle - TWEAK stopOpacity to control brightness (0.1-1) */}
                 <Stop offset="0%" stopColor="#B3E967" stopOpacity="0.6" />
+                
+                {/* Middle Stop: Fade region - offset="70%" controls where fade starts (0-100%), 
+                    stopOpacity controls fade intensity (0.1-0.5) */}
                 <Stop offset="70%" stopColor="#B3E967" stopOpacity="0.2" />
+                
+                {/* Last Stop: Edges - Always 0% opacity for fully transparent fade to nothing */}
                 <Stop offset="100%" stopColor="#B3E967" stopOpacity="0" />
               </RadialGradient>
             </Defs>
+            {/* Circle: r="250" is the radius (half of width/height). Keep matching SVG dimensions */}
             <Circle cx="250" cy="250" r="250" fill={`url(#grad-${ball.id})`} />
           </Svg>
         </Animated.View>
@@ -131,6 +169,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     zIndex: 0,
   },
+  // TWEAK: width/height must match the Svg dimensions above (500x500)
+  // Increase both for larger circles, decrease for smaller
   blurBallWrapper: {
     position: 'absolute',
     width: 500,
