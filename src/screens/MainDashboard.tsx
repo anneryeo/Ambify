@@ -38,6 +38,13 @@ export const MainDashboard: React.FC = () => {
   return (
     <TouchableWithoutFeedback onPress={handleCycleLevel}>
       <View style={styles.container}>
+        <LinearGradient
+          colors={['rgba(169, 247, 80, 0.15)', 'rgba(57, 61, 47, 0.4)', 'rgba(32, 36, 33, 0.8)']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.radialBlur}
+        />
+        
         <View style={styles.header}>
           <Text style={styles.appName}>Ambify</Text>
         </View>
@@ -74,9 +81,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 20,
   },
+  radialBlur: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
   header: {
     alignItems: 'center',
     paddingVertical: 16,
+    zIndex: 1,
   },
   appName: {
     fontSize: 20,
@@ -88,6 +104,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 1,
   },
   circleContainer: {
     width: 280,
