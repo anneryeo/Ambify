@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SplashScreen } from '../screens/SplashScreen';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { MainDashboard } from '../screens/MainDashboard';
-import { sceneTransitionConfig } from '../utils/transitionConfig';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -20,8 +19,8 @@ export const AppNavigator: React.FC = () => {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          animationEnabled: true,
-          ...sceneTransitionConfig,
+          animationEnabled: false,
+          contentStyle: { backgroundColor: '#000000' },
         }}
       >
         <Stack.Screen

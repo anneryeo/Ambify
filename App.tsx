@@ -25,11 +25,11 @@ export default function App() {
   }, []);
 
   if (!isFontsLoaded) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#000000' }} />;
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#000000' }}>
       <AppNavigator />
     </View>
   );
