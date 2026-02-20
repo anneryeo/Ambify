@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getCO2UIData } from '../utils/co2Utils';
 import { AnimatedBackground } from '../components/AnimatedBackground';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const PRACTICE_LEVELS = [555, 921, 1341, 1802];
+
+type MainDashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 
 export const MainDashboard: React.FC = () => {
   const [levelIndex, setLevelIndex] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
+  const navigation = useNavigation<MainDashboardNavigationProp>();
   
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -57,6 +62,26 @@ export const MainDashboard: React.FC = () => {
     });
   };
 
+  const handleBack = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {
+      navigation.goBack();
+    });
+  };
+
+  const handleContinue = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {
+      navigation.navigate('GeneralDashboard');
+    });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={handleCycleLevel}>
       <View style={styles.container}>
@@ -86,6 +111,15 @@ export const MainDashboard: React.FC = () => {
             </Text>
           </View>
         </Animated.View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <Text style={styles.backIcon}>‹</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleContinue} style={styles.nextButton}>
+            <Text style={styles.nextIcon}>›</Text>
+          </TouchableOpacity>
+        </View>
 
       </View>
     </TouchableWithoutFeedback>
@@ -170,5 +204,31 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: 'Golos-Text',
     letterSpacing: -1,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 0,
+    paddingBottom: 24,
+    zIndex: 1,
+  },
+  backButton: {
+    padding: 12,
+  },
+  backIcon: {
+    fontSize: 40,
+    fontWeight: '300',
+    color: '#fff',
+    fontFamily: 'Golos-Text',
+  },
+  nextButton: {
+    padding: 12,
+  },
+  nextIcon: {
+    fontSize: 40,
+    fontWeight: '300',
+    color: '#fff',
+    fontFamily: 'Golos-Text',
   },
 });
