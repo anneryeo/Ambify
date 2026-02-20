@@ -32,9 +32,10 @@ export const AnimatedBackground: React.FC = () => {
   // Each circle needs id, x, y, and scale Animated values
   // Initial positions are constrained to keep blobs visible on screen
   const [blurBalls] = useState<BlurBall[]>([
-    { id: 1, x: new Animated.Value(50), y: new Animated.Value(100), scale: new Animated.Value(1) },
-    { id: 2, x: new Animated.Value(200), y: new Animated.Value(400), scale: new Animated.Value(0.8) },
+    { id: 1, x: new Animated.Value(0), y: new Animated.Value(10), scale: new Animated.Value(1) },
+    { id: 2, x: new Animated.Value(-200), y: new Animated.Value(-100), scale: new Animated.Value(0.8) },
     { id: 3, x: new Animated.Value(100), y: new Animated.Value(600), scale: new Animated.Value(0.6) },
+    { id: 4, x: new Animated.Value(-300), y: new Animated.Value(-200), scale: new Animated.Value(0.6) },
   ]);
 
   useEffect(() => {
@@ -108,7 +109,7 @@ export const AnimatedBackground: React.FC = () => {
               {/* Radial Gradient: Controls the fade effect from center to edges */}
               <RadialGradient id={`grad-${ball.id}`} cx="50%" cy="50%" r="50%">
                 {/* First Stop: Center of circle - TWEAK stopOpacity to control brightness (0.1-1) */}
-                <Stop offset="0%" stopColor="#B3E967" stopOpacity="0.6" />
+                <Stop offset="0%" stopColor="#b9da29" stopOpacity="0.6" />
                 
                 {/* Middle Stop: Fade region - offset="70%" controls where fade starts (0-100%), 
                     stopOpacity controls fade intensity (0.1-0.5) */}

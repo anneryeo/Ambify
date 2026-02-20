@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { getCO2UIData } from '../utils/co2Utils';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
@@ -10,7 +10,6 @@ const PRACTICE_LEVELS = [555, 921, 1341, 1802];
 export const MainDashboard: React.FC = () => {
   const [levelIndex, setLevelIndex] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
-  const navigation = useNavigation();
   
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -58,16 +57,6 @@ export const MainDashboard: React.FC = () => {
     });
   };
 
-  const handleBack = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 800,
-      useNativeDriver: true,
-    }).start(() => {
-      navigation.goBack();
-    });
-  };
-
   return (
     <TouchableWithoutFeedback onPress={handleCycleLevel}>
       <View style={styles.container}>
@@ -98,11 +87,6 @@ export const MainDashboard: React.FC = () => {
           </View>
         </Animated.View>
 
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Text style={styles.backIcon}>‹</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -186,31 +170,5 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: 'Golos-Text',
     letterSpacing: -1,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-    zIndex: 1,
-  },
-  backButton: {
-    padding: 12,
-  },
-  backIcon: {
-    fontSize: 40,
-    fontWeight: '300',
-    color: '#fff',
-    fontFamily: 'Golos-Text',
-  },
-  nextButton: {
-    padding: 12,
-  },
-  nextIcon: {
-    fontSize: 40,
-    fontWeight: '300',
-    color: '#fff',
-    fontFamily: 'Golos-Text',
   },
 });
