@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 
@@ -16,9 +16,9 @@ interface BlurBall {
 //   - width/height (800) → Circle size
 //   - #B3E967 → Circle color
 //
-// Circle Movement (balanced in all directions):
-//   - Math.random() * 400 - 200 → X-axis range (-200 to 200) - equal left/right movement
-//   - Math.random() * 1000 - 500 → Y-axis range (-500 to 500) - equal up/down movement
+// Circle Movement (constrained to keep blobs visible):
+//   - Math.random() * 400 - 100 → X-axis range (-100 to 300)
+//   - Math.random() * 1000 - 200 → Y-axis range (-200 to 800)
 //   - 6000 + Math.random() * 4000 → Speed (milliseconds)
 //   - Math.random() * 0.5 + 0.5 → Size variation
 //
@@ -27,18 +27,29 @@ interface BlurBall {
 //   - blurBalls array → Add/remove circles (each needs unique id)
 // ================================
 
-export const AnimatedBackground: React.FC = () => {
+interface AnimatedBackgroundProps {
+  isPaused?: boolean;
+}
+
+export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({ isPaused = false }) => {
   // TWEAK: Add/remove objects from this array to create more or fewer circles
   // Each circle needs id, x, y, and scale Animated values
   // Initial positions are constrained to keep blobs visible on screen
   const [blurBalls] = useState<BlurBall[]>([
-    { id: 1, x: new Animated.Value(0), y: new Animated.Value(10), scale: new Animated.Value(1) },
-    { id: 2, x: new Animated.Value(-500), y: new Animated.Value(-200), scale: new Animated.Value(0.8) },
-    { id: 3, x: new Animated.Value(-400), y: new Animated.Value(100), scale: new Animated.Value(0.6) },
-    { id: 4, x: new Animated.Value(-300), y: new Animated.Value(-200), scale: new Animated.Value(0.6) },
+    { id: 1, x: new Animated.Value(50), y: new Animated.Value(100), scale: new Animated.Value(1) },
+    { id: 2, x: new Animated.Value(200), y: new Animated.Value(400), scale: new Animated.Value(0.8) },
+    { id: 3, x: new Animated.Value(100), y: new Animated.Value(600), scale: new Animated.Value(0.6) },
   ]);
 
+  const animationsRef = useRef<Animated.CompositeAnimation[]>([]);
+
   useEffect(() => {
+    if (isPaused) {
+      // Stop all running animations immediately to free CPU
+      animationsRef.current.forEach((anim) => anim.stop?.());
+      return;
+    }
+
     const animations = blurBalls.map((ball) => {
       // Create continuous looping animation for each ball
       const sequence: Animated.CompositeAnimation[] = [];
@@ -46,18 +57,20 @@ export const AnimatedBackground: React.FC = () => {
       for (let i = 0; i < 15; i++) {
         sequence.push(
           Animated.parallel([
-            // X-axis movement: balanced left and right
-            // TWEAK: range is Math.random() * 400 - 200 (from -200 to 200) - equal distribution
+            // X-axis movement: constrained to keep blobs visible on screen
+            // TWEAK: range is Math.random() * 400 - 100 (from -100 to 300)
+            // Keeps center within screen width while accounting for 800px blob size
             Animated.timing(ball.x, {
-              toValue: Math.random() * 400 - 200,
+              toValue: Math.random() * 400 - 100,
               // TWEAK: duration controls speed (lower = faster). Add/subtract range for variation
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
-            // Y-axis movement: balanced up and down
-            // TWEAK: range is Math.random() * 1000 - 500 (from -500 to 500) - equal distribution
+            // Y-axis movement: constrained to keep blobs visible on screen
+            // TWEAK: range is Math.random() * 1000 - 200 (from -200 to 800)
+            // Keeps center within screen height while accounting for 800px blob size
             Animated.timing(ball.y, {
-              toValue: Math.random() * 1000 - 500,
+              toValue: Math.random() * 1000 - 200,
               duration: 6000 + Math.random() * 4000,
               useNativeDriver: true,
             }),
@@ -76,13 +89,15 @@ export const AnimatedBackground: React.FC = () => {
       return Animated.loop(Animated.sequence(sequence), { iterations: -1 });
     });
 
+    animationsRef.current = animations;
+
     // Start all animations
     animations.forEach((anim) => anim.start());
 
     return () => {
       animations.forEach((anim) => anim.stop?.());
     };
-  }, [blurBalls]);
+  }, [blurBalls, isPaused]);
 
   return (
     <View style={styles.container}>
@@ -107,7 +122,7 @@ export const AnimatedBackground: React.FC = () => {
               {/* Radial Gradient: Controls the fade effect from center to edges */}
               <RadialGradient id={`grad-${ball.id}`} cx="50%" cy="50%" r="50%">
                 {/* First Stop: Center of circle - TWEAK stopOpacity to control brightness (0.1-1) */}
-                <Stop offset="0%" stopColor="#b9da29" stopOpacity="0.6" />
+                <Stop offset="0%" stopColor="#B3E967" stopOpacity="0.6" />
                 
                 {/* Middle Stop: Fade region - offset="70%" controls where fade starts (0-100%), 
                     stopOpacity controls fade intensity (0.1-0.5) */}

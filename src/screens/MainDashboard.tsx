@@ -1,42 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getCO2UIData } from '../utils/co2Utils';
-import { AnimatedBackground } from '../components/AnimatedBackground';
-import { RootStackParamList } from '../navigation/AppNavigator';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTransition } from '../context/TransitionContext';
 
 const PRACTICE_LEVELS = [555, 921, 1341, 1802];
-
-type MainDashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 
 export const MainDashboard: React.FC = () => {
   const [levelIndex, setLevelIndex] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(1));
-  const [screenFadeAnim] = useState(new Animated.Value(0));
-  const navigation = useNavigation<MainDashboardNavigationProp>();
-  
-  useEffect(() => {
-    Animated.timing(screenFadeAnim, {
-      toValue: 1,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
-  }, [screenFadeAnim]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      // When navigating back to this screen, reset and fade in
-      fadeAnim.setValue(1);
-      screenFadeAnim.setValue(0);
-      Animated.timing(screenFadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }).start();
-    }, [screenFadeAnim])
-  );
+  const { navigate, goBack } = useTransition();
   
   const co2Value = PRACTICE_LEVELS[levelIndex];
   
@@ -65,29 +38,16 @@ export const MainDashboard: React.FC = () => {
   };
 
   const handleBack = () => {
-    Animated.timing(screenFadeAnim, {
-      toValue: 0,
-      duration: 800,
-      useNativeDriver: true,
-    }).start(() => {
-      navigation.navigate('Welcome');
-    });
+    goBack();
   };
 
   const handleContinue = () => {
-    Animated.timing(screenFadeAnim, {
-      toValue: 0,
-      duration: 800,
-      useNativeDriver: true,
-    }).start(() => {
-      navigation.navigate('ProductivityScreen');
-    });
+    navigate('ProductivityScreen');
   };
 
   return (
     <TouchableWithoutFeedback onPress={handleCycleLevel}>
-      <Animated.View style={[styles.container, { opacity: screenFadeAnim }]}>
-        <AnimatedBackground />
+      <View style={styles.container}>
         
         <View style={styles.header}>
           <Text style={styles.appName}>Ambify</Text>
@@ -123,7 +83,7 @@ export const MainDashboard: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-      </Animated.View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -131,7 +91,7 @@ export const MainDashboard: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
     paddingHorizontal: 24,
     paddingVertical: 20,
   },
