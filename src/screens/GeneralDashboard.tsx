@@ -19,25 +19,26 @@ type GeneralDashboardNavigationProp = NativeStackNavigationProp<RootStackParamLi
 export const GeneralDashboard: React.FC = () => {
 	const [levelIndex, setLevelIndex] = useState(0);
 	const [fadeAnim] = useState(new Animated.Value(0));
+	const [screenFadeAnim] = useState(new Animated.Value(0));
 	const navigation = useNavigation<GeneralDashboardNavigationProp>();
 
 	useEffect(() => {
-		Animated.timing(fadeAnim, {
+		Animated.timing(screenFadeAnim, {
 			toValue: 1,
 			duration: 800,
 			useNativeDriver: true,
 		}).start();
-	}, [fadeAnim]);
+	}, [screenFadeAnim]);
 
 	useFocusEffect(
 		React.useCallback(() => {
-			fadeAnim.setValue(0);
-			Animated.timing(fadeAnim, {
+			screenFadeAnim.setValue(0);
+			Animated.timing(screenFadeAnim, {
 				toValue: 1,
 				duration: 800,
 				useNativeDriver: true,
 			}).start();
-		}, [fadeAnim])
+		}, [screenFadeAnim])
 	);
 
 	const currentLevel = PRACTICE_LEVELS[levelIndex];
@@ -66,7 +67,7 @@ export const GeneralDashboard: React.FC = () => {
 	};
 
 	const handleReturn = () => {
-		Animated.timing(fadeAnim, {
+		Animated.timing(screenFadeAnim, {
 			toValue: 0,
 			duration: 800,
 			useNativeDriver: true,
@@ -76,7 +77,7 @@ export const GeneralDashboard: React.FC = () => {
 	};
 
 	const handleNext = () => {
-		Animated.timing(fadeAnim, {
+		Animated.timing(screenFadeAnim, {
 			toValue: 0,
 			duration: 800,
 			useNativeDriver: true,
@@ -87,7 +88,7 @@ export const GeneralDashboard: React.FC = () => {
 
 	return (
 		<TouchableWithoutFeedback onPress={handleCycleLevel}>
-			<View style={styles.container}>
+			<Animated.View style={[styles.container, { opacity: screenFadeAnim }]}>
 				<AnimatedBackground />
 
 				<View style={styles.header}>
@@ -135,7 +136,7 @@ export const GeneralDashboard: React.FC = () => {
 						<Text style={styles.nextIcon}>›</Text>
 					</TouchableOpacity>
 				</View>
-			</View>
+			</Animated.View>
 		</TouchableWithoutFeedback>
 	);
 };

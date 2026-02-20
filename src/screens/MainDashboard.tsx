@@ -14,26 +14,27 @@ type MainDashboardNavigationProp = NativeStackNavigationProp<RootStackParamList,
 export const MainDashboard: React.FC = () => {
   const [levelIndex, setLevelIndex] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [screenFadeAnim] = useState(new Animated.Value(0));
   const navigation = useNavigation<MainDashboardNavigationProp>();
   
   useEffect(() => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(screenFadeAnim, {
       toValue: 1,
       duration: 800,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [screenFadeAnim]);
 
   useFocusEffect(
     React.useCallback(() => {
       // When navigating back to this screen, reset and fade in
-      fadeAnim.setValue(0);
-      Animated.timing(fadeAnim, {
+      screenFadeAnim.setValue(0);
+      Animated.timing(screenFadeAnim, {
         toValue: 1,
         duration: 800,
         useNativeDriver: true,
       }).start();
-    }, [fadeAnim])
+    }, [screenFadeAnim])
   );
   
   const co2Value = PRACTICE_LEVELS[levelIndex];
@@ -63,7 +64,7 @@ export const MainDashboard: React.FC = () => {
   };
 
   const handleBack = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(screenFadeAnim, {
       toValue: 0,
       duration: 800,
       useNativeDriver: true,
@@ -73,7 +74,7 @@ export const MainDashboard: React.FC = () => {
   };
 
   const handleContinue = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(screenFadeAnim, {
       toValue: 0,
       duration: 800,
       useNativeDriver: true,
@@ -84,7 +85,7 @@ export const MainDashboard: React.FC = () => {
 
   return (
     <TouchableWithoutFeedback onPress={handleCycleLevel}>
-      <View style={styles.container}>
+      <Animated.View style={[styles.container, { opacity: screenFadeAnim }]}>
         <AnimatedBackground />
         
         <View style={styles.header}>
@@ -121,7 +122,7 @@ export const MainDashboard: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-      </View>
+      </Animated.View>
     </TouchableWithoutFeedback>
   );
 };
