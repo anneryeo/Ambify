@@ -101,6 +101,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     zIndex: 1,
+    paddingHorizontal: 2,
+    paddingVertical: 2,
   },
   footer: {
     flexDirection: 'row',
@@ -135,6 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: 'Golos-Text',
     letterSpacing: -6,
+    paddingHorizontal: 2,
   },
   subtitle: {
     fontSize: 34,

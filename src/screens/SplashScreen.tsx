@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 32,
     zIndex: 1,
   },
   footer: {
@@ -85,6 +86,8 @@ const styles = StyleSheet.create({
     marginBottom: -26,
     fontFamily: 'Gotu-Regular',
     letterSpacing: -6,
+    textAlign: 'center',
+    paddingHorizontal: 32,
   },
   subtitle: {
     fontSize: 16,

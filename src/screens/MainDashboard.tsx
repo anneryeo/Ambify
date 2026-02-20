@@ -96,7 +96,7 @@ export const MainDashboard: React.FC = () => {
         <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
           <View style={styles.circleContainer}>
             <LinearGradient
-              colors={['rgba(255, 255, 255, 0.1)', uiData.endColor]}
+              colors={['#00000094', uiData.endColor]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.gradientCircle}
@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
+    paddingHorizontal: 2,
   },
   circleContainer: {
     width: 280,
@@ -177,6 +178,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Golos-Text',
     letterSpacing: -6,
+    paddingHorizontal: 4,
   },
   unit: {
     fontSize: 18,
