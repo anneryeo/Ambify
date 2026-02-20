@@ -68,7 +68,7 @@ export const MainDashboard: React.FC = () => {
       duration: 800,
       useNativeDriver: true,
     }).start(() => {
-      navigation.goBack();
+      navigation.navigate('Welcome');
     });
   };
 

@@ -7,7 +7,12 @@ import { AnimatedBackground } from '../components/AnimatedBackground';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const PRACTICE_LEVELS = [555, 921, 1341, 1802];
+const PRACTICE_LEVELS = [
+	{ co2: 555, temperature: 22, humidity: 45 },
+	{ co2: 921, temperature: 24, humidity: 52 },
+	{ co2: 1341, temperature: 26, humidity: 60 },
+	{ co2: 1802, temperature: 28, humidity: 68 },
+];
 
 type GeneralDashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'GeneralDashboard'>;
 
@@ -35,7 +40,8 @@ export const GeneralDashboard: React.FC = () => {
 		}, [fadeAnim])
 	);
 
-	const co2Value = PRACTICE_LEVELS[levelIndex];
+	const currentLevel = PRACTICE_LEVELS[levelIndex];
+	const co2Value = currentLevel.co2;
 	const uiData = getCO2UIData(co2Value);
 
 	const co2Data = {
@@ -104,6 +110,20 @@ export const GeneralDashboard: React.FC = () => {
 					<View style={styles.infoContainer}>
 						<Text style={styles.qualityText}>{co2Data.description}</Text>
 						<Text style={styles.descriptionText}>{uiData.tip}</Text>
+						<View style={styles.metricsRow}>
+							<View style={styles.metricItem}>
+								<Text style={styles.metricLabel}>Temperature</Text>
+								<Text style={styles.metricValue}>{currentLevel.temperature}°C</Text>
+							</View>
+							<View style={styles.metricItem}>
+								<Text style={styles.metricLabel}>Humidity</Text>
+								<Text style={styles.metricValue}>{currentLevel.humidity}%</Text>
+							</View>
+							<View style={styles.metricItem}>
+								<Text style={styles.metricLabel}>CO2</Text>
+								<Text style={styles.metricValue}>{currentLevel.co2} ppm</Text>
+							</View>
+						</View>
 					</View>
 				</Animated.View>
 
@@ -192,6 +212,31 @@ const styles = StyleSheet.create({
 		lineHeight: 30,
 		fontFamily: 'Golos-Text',
 		letterSpacing: -1,
+	},
+	metricsRow: {
+		marginTop: 24,
+		width: '100%',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingHorizontal: 8,
+	},
+	metricItem: {
+		alignItems: 'center',
+		flex: 1,
+	},
+	metricLabel: {
+		fontSize: 14,
+		fontWeight: '400',
+		color: '#aaa',
+		fontFamily: 'Golos-Text',
+	},
+	metricValue: {
+		marginTop: 6,
+		fontSize: 18,
+		fontWeight: '500',
+		color: '#fff',
+		fontFamily: 'Golos-Text',
 	},
 	footer: {
 		flexDirection: 'row',
