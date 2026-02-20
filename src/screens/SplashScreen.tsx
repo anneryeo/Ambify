@@ -90,9 +90,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 13.5,
     color: '#fff',
     fontFamily: 'Gotu-Regular',
+    paddingVertical: 1,
   },
 
 });

@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Golos-Text',
     lineHeight: 30,
     letterSpacing: -3,
+    paddingVertical: 2,
   },
 
 });
