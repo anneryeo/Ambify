@@ -7,7 +7,7 @@ interface CO2UIData {
 export const getCO2UIData = (value: number): CO2UIData => {
   if (value < 600) {
     return {
-      endColor: '#8fdb00',
+      endColor: '#8edb00',
       label: 'Crisp',
       tip: 'Great for high-intensity focus.',
     };
