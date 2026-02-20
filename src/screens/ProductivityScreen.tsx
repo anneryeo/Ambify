@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getCO2UIData } from '../utils/co2Utils';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+const POMODORO_DURATION = 25 * 60; // 25 minutes in seconds
 
 const PRACTICE_LEVELS = [
 	{ co2: 555, temperature: 22, humidity: 45 },
@@ -21,6 +22,11 @@ export const ProductivityScreen: React.FC = () => {
 	const [fadeAnim] = useState(new Animated.Value(1));
 	const [screenFadeAnim] = useState(new Animated.Value(0));
 	const navigation = useNavigation<ProductivityScreenNavigationProp>();
+
+	// Pomodoro timer state
+	const [timeLeft, setTimeLeft] = useState(POMODORO_DURATION);
+	const [isRunning, setIsRunning] = useState(false);
+	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	useEffect(() => {
 		Animated.timing(screenFadeAnim, {
@@ -42,15 +48,38 @@ export const ProductivityScreen: React.FC = () => {
 		}, [screenFadeAnim])
 	);
 
+	// Timer tick
+	useEffect(() => {
+		if (isRunning) {
+			intervalRef.current = setInterval(() => {
+				setTimeLeft((prev) => {
+					if (prev <= 1) {
+						setIsRunning(false);
+						clearInterval(intervalRef.current!);
+						return 0;
+					}
+					return prev - 1;
+				});
+			}, 1000);
+		} else {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+		}
+		return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+		};
+	}, [isRunning]);
+
+	const formatTime = (seconds: number) => {
+		const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+		const s = (seconds % 60).toString().padStart(2, '0');
+		return `${m}:${s}`;
+	};
+
+	const progress = 1 - timeLeft / POMODORO_DURATION;
+
 	const currentLevel = PRACTICE_LEVELS[levelIndex];
 	const co2Value = currentLevel.co2;
 	const uiData = getCO2UIData(co2Value);
-
-	const co2Data = {
-		value: co2Value,
-		quality: 'ppm',
-		description: `The air is ${uiData.label.toLowerCase()}.`,
-	};
 
 	const handleCycleLevel = () => {
 		Animated.timing(fadeAnim, {
@@ -86,36 +115,66 @@ export const ProductivityScreen: React.FC = () => {
 					<Text style={styles.appName}>Ambify</Text>
 				</View>
 
-				<Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-					<View style={styles.circleContainer}>
-						<LinearGradient
-							colors={['rgba(255, 255, 255, 0.1)', uiData.endColor]}
-							start={{ x: 0, y: 0 }}
-							end={{ x: 1, y: 1 }}
-							style={styles.gradientCircle}
-						>
-							<Text style={styles.co2Value}>{co2Data.value}</Text>
-							<Text style={styles.unit}>{co2Data.quality}</Text>
-						</LinearGradient>
+				{/* Pomodoro Timer Card */}
+				<View style={styles.pomodoroCard}>
+					<Text style={styles.sessionLabel}>FOCUS SESSION</Text>
+					<Text style={styles.timerDisplay}>{formatTime(timeLeft)}</Text>
+
+					{/* Progress track */}
+					<View style={styles.progressTrack}>
+						<View style={[styles.progressFill, { width: `${progress * 100}%` as any }]} />
 					</View>
 
-					<View style={styles.infoContainer}>
-						<Text style={styles.qualityText}>{co2Data.description}</Text>
-						<Text style={styles.descriptionText}>{uiData.tip}</Text>
-						<View style={styles.metricsRow}>
-							<View style={styles.metricItem}>
-								<Text style={styles.metricLabel}>Temperature</Text>
-								<Text style={styles.metricValue}>{currentLevel.temperature}°C</Text>
+					<View style={styles.timerControls}>
+						<TouchableOpacity
+							onPress={() => setIsRunning((prev) => !prev)}
+							style={styles.controlBtn}
+						>
+							<Text style={styles.controlBtnText}>{isRunning ? 'Pause' : 'Start'}</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => {
+								setIsRunning(false);
+								setTimeLeft(POMODORO_DURATION);
+							}}
+							style={[styles.controlBtn, styles.controlBtnSecondary]}
+						>
+							<Text style={[styles.controlBtnText, styles.controlBtnTextSecondary]}>Reset</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+
+				{/* Bento Grid */}
+				<Animated.View style={[styles.bentoGrid, { opacity: fadeAnim }]}>
+					{/* Top row: Temperature + Humidity */}
+					<View style={styles.bentoRow}>
+						<View style={[styles.bentoCard, styles.bentoCardSm]}>
+							<Text style={styles.bentoIcon}>🌡</Text>
+							<Text style={styles.bentoValue}>{currentLevel.temperature}°</Text>
+							<Text style={styles.bentoLabel}>Temperature</Text>
+							<Text style={styles.bentoUnit}>Celsius</Text>
+						</View>
+						<View style={[styles.bentoCard, styles.bentoCardSm]}>
+							<Text style={styles.bentoIcon}>💧</Text>
+							<Text style={styles.bentoValue}>{currentLevel.humidity}%</Text>
+							<Text style={styles.bentoLabel}>Humidity</Text>
+							<Text style={styles.bentoUnit}>Relative</Text>
+						</View>
+					</View>
+
+					{/* Bottom row: CO2 full-width */}
+					<View style={[styles.bentoCard, styles.bentoCardWide]}>
+						<View style={styles.co2Row}>
+							<View>
+								<Text style={styles.bentoLabel}>CO₂</Text>
+								<Text style={styles.co2BigValue}>{co2Value}</Text>
+								<Text style={styles.bentoUnit}>ppm</Text>
 							</View>
-							<View style={styles.metricItem}>
-								<Text style={styles.metricLabel}>Humidity</Text>
-								<Text style={styles.metricValue}>{currentLevel.humidity}%</Text>
-							</View>
-							<View style={styles.metricItem}>
-								<Text style={styles.metricLabel}>CO2</Text>
-								<Text style={styles.metricValue}>{currentLevel.co2} ppm</Text>
+							<View style={styles.co2Badge}>
+								<Text style={styles.co2BadgeText}>{uiData.label}</Text>
 							</View>
 						</View>
+						<Text style={styles.co2Tip} numberOfLines={2}>{uiData.tip}</Text>
 					</View>
 				</Animated.View>
 
@@ -129,16 +188,24 @@ export const ProductivityScreen: React.FC = () => {
 	);
 };
 
+// Frosted glass base
+const glass = {
+	backgroundColor: 'rgba(255, 255, 255, 0.07)',
+	borderWidth: 1,
+	borderColor: 'rgba(255, 255, 255, 0.14)',
+	borderRadius: 20,
+};
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#000000',
-		paddingHorizontal: 24,
+		paddingHorizontal: 20,
 		paddingVertical: 20,
 	},
 	header: {
 		alignItems: 'center',
-		paddingVertical: 16,
+		paddingVertical: 12,
 		zIndex: 1,
 	},
 	appName: {
@@ -147,92 +214,159 @@ const styles = StyleSheet.create({
 		color: '#fff',
 		fontFamily: 'Gotu-Regular',
 	},
-	content: {
-		flex: 1,
-		justifyContent: 'center',
+
+	// ─── Pomodoro ────────────────────────────────────────────────────────────
+	pomodoroCard: {
+		...glass,
+		marginTop: 8,
+		paddingVertical: 24,
+		paddingHorizontal: 28,
 		alignItems: 'center',
 		zIndex: 1,
 	},
-	circleContainer: {
-		width: 280,
-		height: 280,
-		borderRadius: 140,
-		marginBottom: 40,
-		opacity: 0.9,
+	sessionLabel: {
+		fontSize: 11,
+		letterSpacing: 3,
+		color: 'rgba(255,255,255,0.4)',
+		fontFamily: 'Golos-Text',
+		marginBottom: 10,
 	},
-	gradientCircle: {
+	timerDisplay: {
+		fontSize: 72,
+		fontWeight: '100',
+		color: '#fff',
+		fontFamily: 'Golos-Text',
+		letterSpacing: -4,
+		lineHeight: 80,
+	},
+	progressTrack: {
+		marginTop: 18,
 		width: '100%',
+		height: 3,
+		borderRadius: 2,
+		backgroundColor: 'rgba(255,255,255,0.12)',
+		overflow: 'hidden',
+	},
+	progressFill: {
 		height: '100%',
-		borderRadius: 140,
-		justifyContent: 'center',
-		alignItems: 'center',
+		borderRadius: 2,
+		backgroundColor: 'rgba(255,255,255,0.72)',
 	},
-	co2Value: {
-		fontSize: 64,
-		fontWeight: '100',
-		color: '#fff',
-		fontFamily: 'Golos-Text',
-		letterSpacing: -6,
-	},
-	unit: {
-		fontSize: 18,
-		fontWeight: '100',
-		color: '#fff',
-		fontFamily: 'Golos-Text',
-		marginTop: 4,
-	},
-	infoContainer: {
-		alignItems: 'center',
-		paddingHorizontal: 16,
-	},
-	qualityText: {
-		fontSize: 24,
-		fontWeight: '100',
-		color: '#fff',
-		marginBottom: 12,
-		fontFamily: 'Golos-Text',
-		letterSpacing: -1,
-	},
-	descriptionText: {
-		fontSize: 20,
-		fontWeight: '100',
-		color: '#bbb',
-		textAlign: 'center',
-		lineHeight: 30,
-		fontFamily: 'Golos-Text',
-		letterSpacing: -1,
-	},
-	metricsRow: {
-		marginTop: 24,
-		width: '100%',
+	timerControls: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		paddingHorizontal: 8,
+		gap: 12,
+		marginTop: 20,
 	},
-	metricItem: {
-		alignItems: 'center',
+	controlBtn: {
+		paddingVertical: 10,
+		paddingHorizontal: 28,
+		borderRadius: 50,
+		backgroundColor: 'rgba(255,255,255,0.88)',
+	},
+	controlBtnSecondary: {
+		backgroundColor: 'transparent',
+		borderWidth: 1,
+		borderColor: 'rgba(255,255,255,0.28)',
+	},
+	controlBtnText: {
+		fontSize: 15,
+		fontWeight: '500',
+		color: '#000',
+		fontFamily: 'Golos-Text',
+	},
+	controlBtnTextSecondary: {
+		color: 'rgba(255,255,255,0.7)',
+	},
+
+	// ─── Bento Grid ──────────────────────────────────────────────────────────
+	bentoGrid: {
+		flex: 1,
+		marginTop: 14,
+		gap: 10,
+		zIndex: 1,
+	},
+	bentoRow: {
+		flexDirection: 'row',
+		gap: 10,
+	},
+	bentoCard: {
+		...glass,
+		padding: 18,
+	},
+	bentoCardSm: {
 		flex: 1,
 	},
-	metricLabel: {
-		fontSize: 14,
-		fontWeight: '400',
-		color: '#aaa',
-		fontFamily: 'Golos-Text',
+	bentoCardWide: {
+		flex: 1,
+		justifyContent: 'space-between',
 	},
-	metricValue: {
-		marginTop: 6,
-		fontSize: 18,
-		fontWeight: '500',
+	bentoIcon: {
+		fontSize: 22,
+		marginBottom: 8,
+	},
+	bentoValue: {
+		fontSize: 36,
+		fontWeight: '200',
 		color: '#fff',
 		fontFamily: 'Golos-Text',
+		letterSpacing: -1,
+		lineHeight: 40,
 	},
+	bentoLabel: {
+		fontSize: 13,
+		fontWeight: '400',
+		color: 'rgba(255,255,255,0.5)',
+		fontFamily: 'Golos-Text',
+		marginTop: 6,
+	},
+	bentoUnit: {
+		fontSize: 12,
+		color: 'rgba(255,255,255,0.3)',
+		fontFamily: 'Golos-Text',
+		marginTop: 2,
+	},
+	co2Row: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'flex-start',
+	},
+	co2BigValue: {
+		fontSize: 52,
+		fontWeight: '100',
+		color: '#fff',
+		fontFamily: 'Golos-Text',
+		letterSpacing: -3,
+		lineHeight: 58,
+	},
+	co2Badge: {
+		marginTop: 4,
+		paddingVertical: 6,
+		paddingHorizontal: 14,
+		borderRadius: 50,
+		backgroundColor: 'rgba(255,255,255,0.1)',
+		borderWidth: 1,
+		borderColor: 'rgba(255,255,255,0.18)',
+		alignSelf: 'flex-start',
+	},
+	co2BadgeText: {
+		fontSize: 13,
+		color: 'rgba(255,255,255,0.75)',
+		fontFamily: 'Golos-Text',
+	},
+	co2Tip: {
+		marginTop: 10,
+		fontSize: 13,
+		color: 'rgba(255,255,255,0.35)',
+		fontFamily: 'Golos-Text',
+		lineHeight: 19,
+	},
+
+	// ─── Footer ──────────────────────────────────────────────────────────────
 	footer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
-		paddingHorizontal: 24,
-		paddingBottom: 24,
+		paddingBottom: 16,
 		zIndex: 1,
 	},
 	backButton: {
