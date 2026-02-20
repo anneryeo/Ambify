@@ -6,6 +6,10 @@ import { AnimatedBackground } from '../components/AnimatedBackground';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// ADJUSTABLE CONSTANTS
+// ═══════════════════════════════════════════════════════════════════════════════
+// Adjust POMODORO_DURATION to change the focus session length (in seconds)
 const POMODORO_DURATION = 25 * 60; // 25 minutes in seconds
 
 const PRACTICE_LEVELS = [
@@ -163,15 +167,22 @@ export const ProductivityScreen: React.FC = () => {
 					</View>
 
 					{/* Bottom row: CO2 full-width */}
-					<View style={[styles.bentoCard, styles.bentoCardWide]}>
+					<View style={[
+						styles.bentoCard,
+						styles.bentoCardWide,
+						{
+							backgroundColor: `${uiData.endColor}22`,
+							borderColor: `${uiData.endColor}55`,
+						},
+					]}>
 						<View style={styles.co2Row}>
 							<View>
 								<Text style={styles.bentoLabel}>CO₂</Text>
-								<Text style={styles.co2BigValue}>{co2Value}</Text>
+								<Text style={[styles.co2BigValue, { color: uiData.endColor === '#507e10' ? '#a8d44e' : uiData.endColor }]}>{co2Value}</Text>
 								<Text style={styles.bentoUnit}>ppm</Text>
 							</View>
-							<View style={styles.co2Badge}>
-								<Text style={styles.co2BadgeText}>{uiData.label}</Text>
+							<View style={[styles.co2Badge, { backgroundColor: `${uiData.endColor}33`, borderColor: `${uiData.endColor}66` }]}>
+								<Text style={[styles.co2BadgeText, { color: uiData.endColor === '#507e10' ? '#a8d44e' : uiData.endColor }]}>{uiData.label}</Text>
 							</View>
 						</View>
 						<Text style={styles.co2Tip} numberOfLines={2}>{uiData.tip}</Text>
@@ -189,10 +200,12 @@ export const ProductivityScreen: React.FC = () => {
 };
 
 // Frosted glass base
+// Adjust backgroundColor and borderColor opacity values to change grid box transparency
+// Example: '0.07' = 7% opacity, '0.14' = 14% opacity (lower = more transparent)
 const glass = {
-	backgroundColor: 'rgba(255, 255, 255, 0.07)',
+	backgroundColor: 'rgba(255, 255, 255, 0.07)', // Adjust first 0.07 for background opacity
 	borderWidth: 1,
-	borderColor: 'rgba(255, 255, 255, 0.14)',
+	borderColor: 'rgba(255, 255, 255, 0.14)', // Adjust 0.14 for border opacity
 	borderRadius: 20,
 };
 
