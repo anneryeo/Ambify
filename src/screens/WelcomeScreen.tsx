@@ -47,7 +47,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onContinue }) => {
       duration: 800,
       useNativeDriver: true,
     }).start(() => {
-      navigation.goBack();
+      navigation.navigate('Splash' as never);
     });
   };
 
