@@ -80,7 +80,7 @@ export const MainDashboard: React.FC = () => {
       duration: 800,
       useNativeDriver: true,
     }).start(() => {
-      navigation.navigate('GeneralDashboard');
+      navigation.navigate('ProductivityScreen');
     });
   };
 

@@ -4,13 +4,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SplashScreen } from '../screens/SplashScreen';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { MainDashboard } from '../screens/MainDashboard';
-import { GeneralDashboard } from '../screens/GeneralDashboard';
+import { ProductivityScreen } from '../screens/ProductivityScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
   Welcome: undefined;
   Dashboard: undefined;
-  GeneralDashboard: undefined;
+  ProductivityScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -38,7 +38,7 @@ export const AppNavigator: React.FC = () => {
           {(props) => <WelcomeScreen onContinue={() => props.navigation.navigate('Dashboard')} />}
         </Stack.Screen>
         <Stack.Screen name="Dashboard" component={MainDashboard} />
-        <Stack.Screen name="GeneralDashboard" component={GeneralDashboard} />
+        <Stack.Screen name="ProductivityScreen" component={ProductivityScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

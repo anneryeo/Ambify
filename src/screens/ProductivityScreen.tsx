@@ -14,13 +14,13 @@ const PRACTICE_LEVELS = [
 	{ co2: 1802, temperature: 28, humidity: 68 },
 ];
 
-type GeneralDashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'GeneralDashboard'>;
+type ProductivityScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductivityScreen'>;
 
-export const GeneralDashboard: React.FC = () => {
+export const ProductivityScreen: React.FC = () => {
 	const [levelIndex, setLevelIndex] = useState(0);
 	const [fadeAnim] = useState(new Animated.Value(1));
 	const [screenFadeAnim] = useState(new Animated.Value(0));
-	const navigation = useNavigation<GeneralDashboardNavigationProp>();
+	const navigation = useNavigation<ProductivityScreenNavigationProp>();
 
 	useEffect(() => {
 		Animated.timing(screenFadeAnim, {

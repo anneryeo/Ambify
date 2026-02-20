@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 34,
     fontWeight: '400',
-    color: '#aaa',
+    color: '#e6e6e6',
     fontFamily: 'Golos-Text',
     lineHeight: 30,
     letterSpacing: -3,
