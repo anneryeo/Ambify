@@ -167,22 +167,26 @@ export const ProductivityScreen: React.FC = () => {
 					</View>
 
 					{/* Bottom row: CO2 full-width */}
+					{/* ═══ CO2 CARD COLOR CUSTOMIZATION ═══ */}
+					{/* Adjust the opacity hex values below to customize the CO2 card appearance */}
+					{/* backgroundColor: '22'=13% | '33'=20% | '55'=33% opacity (hex format) */}
+					{/* borderColor: '55'=33% | '66'=40% | '88'=53% opacity (hex format) */}
 					<View style={[
 						styles.bentoCard,
 						styles.bentoCardWide,
 						{
-							backgroundColor: `${uiData.endColor}22`,
-							borderColor: `${uiData.endColor}55`,
+							backgroundColor: `${uiData.endColor}35`, // ← Adjust '22' for background opacity
+							borderColor: `${uiData.endColor}70`, // ← Adjust '55' for border opacity
 						},
 					]}>
 						<View style={styles.co2Row}>
 							<View>
 								<Text style={styles.bentoLabel}>CO₂</Text>
-								<Text style={[styles.co2BigValue, { color: uiData.endColor === '#507e10' ? '#a8d44e' : uiData.endColor }]}>{co2Value}</Text>
+								<Text style={styles.co2BigValue}>{co2Value}</Text>
 								<Text style={styles.bentoUnit}>ppm</Text>
 							</View>
-							<View style={[styles.co2Badge, { backgroundColor: `${uiData.endColor}33`, borderColor: `${uiData.endColor}66` }]}>
-								<Text style={[styles.co2BadgeText, { color: uiData.endColor === '#507e10' ? '#a8d44e' : uiData.endColor }]}>{uiData.label}</Text>
+							<View style={[styles.co2Badge, { backgroundColor: `${uiData.endColor}30`, borderColor: `${uiData.endColor}66` }]}>
+								<Text style={styles.co2BadgeText}>{uiData.label}</Text>
 							</View>
 						</View>
 						<Text style={styles.co2Tip} numberOfLines={2}>{uiData.tip}</Text>
@@ -302,6 +306,11 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		gap: 10,
 	},
+	// ═══ GRID BOX OPACITY CUSTOMIZATION ═══
+	// Adjust 'glass' constant (line ~240) to change all grid box opacities:
+	// - backgroundColor opacity: change 0.07 (7%) to desired value
+	// - borderColor opacity: change 0.14 (14%) to desired value
+	// - Example: 0.05=5%, 0.10=10%, 0.15=15%, 0.20=20%
 	bentoCard: {
 		...glass,
 		padding: 18,
@@ -346,7 +355,7 @@ const styles = StyleSheet.create({
 	co2BigValue: {
 		fontSize: 52,
 		fontWeight: '100',
-		color: '#fff',
+		color: '#f0f0f0',
 		fontFamily: 'Golos-Text',
 		letterSpacing: -3,
 		lineHeight: 58,
