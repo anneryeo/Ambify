@@ -13,7 +13,7 @@ type MainDashboardNavigationProp = NativeStackNavigationProp<RootStackParamList,
 
 export const MainDashboard: React.FC = () => {
   const [levelIndex, setLevelIndex] = useState(0);
-  const [fadeAnim] = useState(new Animated.Value(0));
+  const [fadeAnim] = useState(new Animated.Value(1));
   const [screenFadeAnim] = useState(new Animated.Value(0));
   const navigation = useNavigation<MainDashboardNavigationProp>();
   
@@ -28,6 +28,7 @@ export const MainDashboard: React.FC = () => {
   useFocusEffect(
     React.useCallback(() => {
       // When navigating back to this screen, reset and fade in
+      fadeAnim.setValue(1);
       screenFadeAnim.setValue(0);
       Animated.timing(screenFadeAnim, {
         toValue: 1,

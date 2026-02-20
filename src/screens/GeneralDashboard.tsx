@@ -18,7 +18,7 @@ type GeneralDashboardNavigationProp = NativeStackNavigationProp<RootStackParamLi
 
 export const GeneralDashboard: React.FC = () => {
 	const [levelIndex, setLevelIndex] = useState(0);
-	const [fadeAnim] = useState(new Animated.Value(0));
+	const [fadeAnim] = useState(new Animated.Value(1));
 	const [screenFadeAnim] = useState(new Animated.Value(0));
 	const navigation = useNavigation<GeneralDashboardNavigationProp>();
 
@@ -32,6 +32,7 @@ export const GeneralDashboard: React.FC = () => {
 
 	useFocusEffect(
 		React.useCallback(() => {
+			fadeAnim.setValue(1);
 			screenFadeAnim.setValue(0);
 			Animated.timing(screenFadeAnim, {
 				toValue: 1,
@@ -73,16 +74,6 @@ export const GeneralDashboard: React.FC = () => {
 			useNativeDriver: true,
 		}).start(() => {
 			navigation.goBack();
-		});
-	};
-
-	const handleNext = () => {
-		Animated.timing(screenFadeAnim, {
-			toValue: 0,
-			duration: 800,
-			useNativeDriver: true,
-		}).start(() => {
-			navigation.navigate('Dashboard');
 		});
 	};
 
@@ -131,9 +122,6 @@ export const GeneralDashboard: React.FC = () => {
 				<View style={styles.footer}>
 					<TouchableOpacity onPress={handleReturn} style={styles.backButton}>
 						<Text style={styles.backIcon}>‹</Text>
-					</TouchableOpacity>
-					<TouchableOpacity onPress={handleNext} style={styles.nextButton}>
-						<Text style={styles.nextIcon}>›</Text>
 					</TouchableOpacity>
 				</View>
 			</Animated.View>
@@ -241,7 +229,7 @@ const styles = StyleSheet.create({
 	},
 	footer: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
+		justifyContent: 'center',
 		alignItems: 'center',
 		paddingHorizontal: 24,
 		paddingBottom: 24,
@@ -251,15 +239,6 @@ const styles = StyleSheet.create({
 		padding: 12,
 	},
 	backIcon: {
-		fontSize: 40,
-		fontWeight: '300',
-		color: '#fff',
-		fontFamily: 'Golos-Text',
-	},
-	nextButton: {
-		padding: 12,
-	},
-	nextIcon: {
 		fontSize: 40,
 		fontWeight: '300',
 		color: '#fff',
