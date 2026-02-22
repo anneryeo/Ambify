@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getCO2UIData } from '../utils/co2Utils';
-import { AnimatedBackground } from '../components/AnimatedBackground';
-import { RootStackParamList } from '../navigation/AppNavigator';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTransition } from '../context/TransitionContext';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ADJUSTABLE CONSTANTS
@@ -19,38 +16,18 @@ const PRACTICE_LEVELS = [
 	{ co2: 1802, temperature: 28, humidity: 68 },
 ];
 
-type ProductivityScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductivityScreen'>;
+interface ProductivityScreenProps {
+}
 
-export const ProductivityScreen: React.FC = () => {
+export const ProductivityScreen: React.FC<ProductivityScreenProps> = () => {
 	const [levelIndex, setLevelIndex] = useState(0);
 	const [fadeAnim] = useState(new Animated.Value(1));
-	const [screenFadeAnim] = useState(new Animated.Value(0));
-	const navigation = useNavigation<ProductivityScreenNavigationProp>();
+	const { goBack } = useTransition();
 
 	// Pomodoro timer state
 	const [timeLeft, setTimeLeft] = useState(POMODORO_DURATION);
 	const [isRunning, setIsRunning] = useState(false);
 	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-	useEffect(() => {
-		Animated.timing(screenFadeAnim, {
-			toValue: 1,
-			duration: 800,
-			useNativeDriver: true,
-		}).start();
-	}, [screenFadeAnim]);
-
-	useFocusEffect(
-		React.useCallback(() => {
-			fadeAnim.setValue(1);
-			screenFadeAnim.setValue(0);
-			Animated.timing(screenFadeAnim, {
-				toValue: 1,
-				duration: 800,
-				useNativeDriver: true,
-			}).start();
-		}, [screenFadeAnim])
-	);
 
 	// Timer tick
 	useEffect(() => {
@@ -101,19 +78,12 @@ export const ProductivityScreen: React.FC = () => {
 	};
 
 	const handleReturn = () => {
-		Animated.timing(screenFadeAnim, {
-			toValue: 0,
-			duration: 800,
-			useNativeDriver: true,
-		}).start(() => {
-			navigation.goBack();
-		});
+		goBack();
 	};
 
 	return (
 		<TouchableWithoutFeedback onPress={handleCycleLevel}>
-			<Animated.View style={[styles.container, { opacity: screenFadeAnim }]}>
-				<AnimatedBackground />
+			<View style={styles.container}>
 
 				<View style={styles.header}>
 					<Text style={styles.appName}>Ambify</Text>
@@ -198,7 +168,7 @@ export const ProductivityScreen: React.FC = () => {
 						<Text style={styles.backIcon}>‹</Text>
 					</TouchableOpacity>
 				</View>
-			</Animated.View>
+			</View>
 		</TouchableWithoutFeedback>
 	);
 };
@@ -216,7 +186,7 @@ const glass = {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#000000',
+		backgroundColor: 'transparent',
 		paddingHorizontal: 20,
 		paddingVertical: 20,
 	},

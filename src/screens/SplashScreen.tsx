@@ -1,36 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { AnimatedBackground } from '../components/AnimatedBackground';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { useTransition } from '../context/TransitionContext';
 
-interface SplashScreenProps {
-  onContinue: () => void;
-}
-
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
-  const [fadeAnim] = useState(new Animated.Value(1));
-
-  useFocusEffect(
-    React.useCallback(() => {
-      // Reset to fully visible when navigating back to this screen
-      fadeAnim.setValue(1);
-    }, [fadeAnim])
-  );
+export const SplashScreen: React.FC = () => {
+  const { navigate } = useTransition();
 
   const handlePress = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 800,
-      useNativeDriver: true,
-    }).start(() => {
-      onContinue();
-    });
+    navigate('Welcome');
   };
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
-      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        <AnimatedBackground />
+      <View style={styles.container}>
 
         <View style={styles.content}>
           <Text style={styles.title}>Ambify</Text>
@@ -42,7 +23,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
             <Text style={styles.nextIcon}>›</Text>
           </TouchableOpacity>
         </View>
-      </Animated.View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -50,7 +31,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onContinue }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 60,
