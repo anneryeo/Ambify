@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { getCO2UIData } from '../utils/co2Utils';
 import { useTransition } from '../context/TransitionContext';
+import { useSensorData } from '../hooks/useSensorData';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ADJUSTABLE CONSTANTS
@@ -9,6 +10,7 @@ import { useTransition } from '../context/TransitionContext';
 // Adjust POMODORO_DURATION to change the focus session length (in seconds)
 const POMODORO_DURATION = 25 * 60; // 25 minutes in seconds
 
+// ─── DEMO / PRACTICE LEVELS (used when Google Sheets URL is not configured) ──
 const PRACTICE_LEVELS = [
 	{ co2: 555, temperature: 22, humidity: 45 },
 	{ co2: 921, temperature: 24, humidity: 52 },
@@ -23,6 +25,42 @@ export const ProductivityScreen: React.FC<ProductivityScreenProps> = () => {
 	const [levelIndex, setLevelIndex] = useState(0);
 	const [fadeAnim] = useState(new Animated.Value(1));
 	const { goBack } = useTransition();
+	const { reading, isLive } = useSensorData();
+
+	// Seed from context on every mount: if we already have live data (e.g. returning
+	// to this screen after navigating away), start with the correct value immediately
+	// rather than flashing the placeholder first.
+	const [displayedLevel, setDisplayedLevel] = useState(
+		isLive && reading
+			? { co2: reading.co2, temperature: reading.temperature, humidity: reading.humidity }
+			: PRACTICE_LEVELS[0]
+	);
+	// Prime the ref with the same seed so the change-detection effect below does
+	// not immediately trigger a redundant fade on mount.
+	const prevLiveCO2 = useRef<number | null>(isLive && reading ? reading.co2 : null);
+
+	const fadeTo = (next: { co2: number; temperature: number; humidity: number }) => {
+		Animated.timing(fadeAnim, {
+			toValue: 0,
+			duration: 600,
+			useNativeDriver: true,
+		}).start(() => {
+			setDisplayedLevel(next);
+			Animated.timing(fadeAnim, {
+				toValue: 1,
+				duration: 600,
+				useNativeDriver: true,
+			}).start();
+		});
+	};
+
+	// When live data arrives or updates, fade to the new values
+	useEffect(() => {
+		if (!isLive || !reading) return;
+		if (reading.co2 === prevLiveCO2.current) return;
+		prevLiveCO2.current = reading.co2;
+		fadeTo({ co2: reading.co2, temperature: reading.temperature, humidity: reading.humidity });
+	}, [reading, isLive]);
 
 	// Pomodoro timer state
 	const [timeLeft, setTimeLeft] = useState(POMODORO_DURATION);
@@ -58,23 +96,14 @@ export const ProductivityScreen: React.FC<ProductivityScreenProps> = () => {
 
 	const progress = 1 - timeLeft / POMODORO_DURATION;
 
-	const currentLevel = PRACTICE_LEVELS[levelIndex];
-	const co2Value = currentLevel.co2;
+	const co2Value = displayedLevel.co2;
 	const uiData = getCO2UIData(co2Value);
 
 	const handleCycleLevel = () => {
-		Animated.timing(fadeAnim, {
-			toValue: 0,
-			duration: 800,
-			useNativeDriver: true,
-		}).start(() => {
-			setLevelIndex((prev) => (prev + 1) % PRACTICE_LEVELS.length);
-			Animated.timing(fadeAnim, {
-				toValue: 1,
-				duration: 800,
-				useNativeDriver: true,
-			}).start();
-		});
+		if (isLive) return; // let live data drive transitions
+		const next = (levelIndex + 1) % PRACTICE_LEVELS.length;
+		setLevelIndex(next);
+		fadeTo(PRACTICE_LEVELS[next]);
 	};
 
 	const handleReturn = () => {
@@ -124,13 +153,13 @@ export const ProductivityScreen: React.FC<ProductivityScreenProps> = () => {
 					<View style={styles.bentoRow}>
 						<View style={[styles.bentoCard, styles.bentoCardSm]}>
 							<Text style={styles.bentoIcon}>🌡</Text>
-							<Text style={styles.bentoValue}>{currentLevel.temperature}°</Text>
+							<Text style={styles.bentoValue}>{displayedLevel.temperature}°</Text>
 							<Text style={styles.bentoLabel}>Temperature</Text>
 							<Text style={styles.bentoUnit}>Celsius</Text>
 						</View>
 						<View style={[styles.bentoCard, styles.bentoCardSm]}>
 							<Text style={styles.bentoIcon}>💧</Text>
-							<Text style={styles.bentoValue}>{currentLevel.humidity}%</Text>
+							<Text style={styles.bentoValue}>{displayedLevel.humidity}%</Text>
 							<Text style={styles.bentoLabel}>Humidity</Text>
 							<Text style={styles.bentoUnit}>Relative</Text>
 						</View>

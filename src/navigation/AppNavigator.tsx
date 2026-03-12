@@ -7,6 +7,7 @@ import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { MainDashboard } from '../screens/MainDashboard';
 import { ProductivityScreen } from '../screens/ProductivityScreen';
 import { TransitionContext } from '../context/TransitionContext';
+import { SensorProvider } from '../context/SensorContext';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 
 export type RootStackParamList = {
@@ -74,6 +75,7 @@ export const AppNavigator: React.FC = () => {
   }), [performTransition]);
 
   return (
+    <SensorProvider>
     <TransitionContext.Provider value={transitionApi}>
       <View style={{ flex: 1, backgroundColor: '#000' }}>
         {/* Single shared background — only ONE instance for the entire app */}
@@ -104,5 +106,6 @@ export const AppNavigator: React.FC = () => {
         />
       </View>
     </TransitionContext.Provider>
+    </SensorProvider>
   );
 };

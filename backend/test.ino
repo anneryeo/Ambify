@@ -40,12 +40,12 @@ void loop() {
     Serial.println("°C");
   }
 
-  // --- Read MQ135 ---
-  // This reads the raw analog voltage (0-4095 on the ESP32)
-  // We will apply the eCO2 math later once we know the sensor works!
-  int rawGasValue = analogRead(MQ135PIN);
-  
-  Serial.print("MQ135 Raw Analog Value: ");
-  Serial.println(rawGasValue);
-  Serial.println("---------------------------------");
+// --- Simulated MQ135 for Demo ---
+// We create a baseline and add a random "jitter" to look realistic
+int baseline = 600; 
+int fluctuation = random(-15, 15); // Adds/subtracts up to 15
+int rawGasValue = baseline + fluctuation;
+
+Serial.print("MQ135 Raw Analog Value (Simulated): ");
+Serial.println(rawGasValue);
 }

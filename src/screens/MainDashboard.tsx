@@ -1,40 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getCO2UIData } from '../utils/co2Utils';
 import { useTransition } from '../context/TransitionContext';
+import { useSensorData } from '../hooks/useSensorData';
 
+// ─── DEMO / PRACTICE LEVELS (used when Google Sheets URL is not configured) ──
 const PRACTICE_LEVELS = [555, 921, 1341, 1802];
 
 export const MainDashboard: React.FC = () => {
   const [levelIndex, setLevelIndex] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(1));
   const { navigate, goBack } = useTransition();
-  
-  const co2Value = PRACTICE_LEVELS[levelIndex];
-  
-  const uiData = getCO2UIData(co2Value);
-  
+  const { reading, isLive } = useSensorData();
+
+  // Seed from context on every mount: if we already have live data (e.g. returning
+  // to this screen after navigating away), start with the correct value immediately
+  // rather than flashing the placeholder first.
+  const [displayedCO2, setDisplayedCO2] = useState(
+    isLive && reading ? reading.co2 : PRACTICE_LEVELS[0]
+  );
+  // Prime the ref with the same seed so the change-detection effect below does
+  // not immediately trigger a redundant fade on mount.
+  const prevLiveCO2 = useRef<number | null>(isLive && reading ? reading.co2 : null);
+
+  const fadeTo = (newCO2: number) => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 600,
+      useNativeDriver: true,
+    }).start(() => {
+      setDisplayedCO2(newCO2);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }).start();
+    });
+  };
+
+  // When live data arrives or updates, fade to the new value
+  useEffect(() => {
+    if (!isLive || !reading) return;
+    if (reading.co2 === prevLiveCO2.current) return;
+    prevLiveCO2.current = reading.co2;
+    fadeTo(reading.co2);
+  }, [reading, isLive]);
+
+  const uiData = getCO2UIData(displayedCO2);
+
   const co2Data = {
-    value: co2Value,
+    value: displayedCO2,
     quality: 'ppm',
     description: `The air is ${uiData.label.toLowerCase()}.`,
   };
 
   const handleCycleLevel = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 800,
-      useNativeDriver: true,
-    }).start(() => {
-      setLevelIndex((prev) => (prev + 1) % PRACTICE_LEVELS.length);
-      
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }).start();
-    });
+    if (isLive) return; // let live data drive transitions
+    const next = (levelIndex + 1) % PRACTICE_LEVELS.length;
+    setLevelIndex(next);
+    fadeTo(PRACTICE_LEVELS[next]);
   };
 
   const handleBack = () => {
