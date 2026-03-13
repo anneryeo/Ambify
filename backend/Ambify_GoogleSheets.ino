@@ -41,7 +41,7 @@ const char* GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuLanR
 //   true  → interval in SECONDS  (good for rapid data collection / demos)
 //
 #define USE_SECONDS          true   // ← true = seconds mode, false = minutes mode
-#define LOG_INTERVAL_SECONDS 10    // ← Used when USE_SECONDS = true  (e.g. 10, 30, 60)
+#define LOG_INTERVAL_SECONDS 30    // ← Used when USE_SECONDS = true  (e.g. 10, 30, 60)
 #define LOG_INTERVAL_MINUTES 2     // ← Used when USE_SECONDS = false (e.g. 1, 2, 5)
 
 // Derived — do not edit

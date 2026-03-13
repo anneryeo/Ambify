@@ -22,7 +22,7 @@ export const WelcomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.greeting}>Hello, Josh</Text>
+          <Text style={styles.greeting}>Hello,</Text>
           <Text style={styles.subtitle}>Sync your space with your state of mind</Text>
         </View>
 
