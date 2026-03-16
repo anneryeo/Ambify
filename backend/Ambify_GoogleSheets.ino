@@ -18,6 +18,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
+#include <math.h>
 #include "DHT.h"
 
 // ─── WIFI CREDENTIALS ────────────────────────────────────────────────────────
@@ -49,11 +50,31 @@ const unsigned long LOG_INTERVAL_MS = USE_SECONDS
   ? (unsigned long)LOG_INTERVAL_SECONDS * 1000UL
   : (unsigned long)LOG_INTERVAL_MINUTES * 60UL * 1000UL;
 
-// ─── MQ135 CALIBRATION ──────────────────────────────────────────────────────
-// When your MQ135 is working, this offset is subtracted from the raw ADC
-// average to approximate CO₂ ppm.  Tune it in fresh outdoor air (~400 ppm).
-#define CO2_ZERO_OFFSET 55
-#define MQ135_SAMPLES   10     // Number of ADC samples to average
+// ─── MQ135 CALIBRATION (FULL GAS-CURVE MODEL) ──────────────────────────────
+// This sketch estimates CO2 with the common MQ135 power-law model:
+//   Rs = RL * ((VREF / Vout) - 1)
+//   ratio = Rs / R0
+//   ppm = A * (ratio ^ B)
+//
+// Notes:
+// - Constants below are widely used starting points, not lab-grade truths.
+// - Tune MQ135_R0_KOHM on your own hardware after warm-up for best results.
+// - MQ135 is cross-sensitive; this remains an estimate.
+#define MQ135_SAMPLES       10        // Number of ADC samples to average
+#define ADC_MAX_COUNTS      4095.0f   // ESP32 ADC resolution
+#define ADC_VREF            3.3f      // ADC reference / sensor supply voltage
+#define MQ135_RL_KOHM       10.0f     // Module load resistor RL (kOhm)
+#define MQ135_R0_KOHM       20.0f     // Sensor baseline R0 after calibration (kOhm)
+
+// CO2 curve coefficients (power law): ppm = A * (Rs/R0)^B
+#define MQ135_CO2_A         116.6020682f
+#define MQ135_CO2_B         -2.769034857f
+
+// Air baseline anchor (used when deriving R0 outdoors at ~400 ppm)
+#define MQ135_ATMOSPHERIC_CO2_PPM 400.0f
+
+// Optional compensation using DHT11 data.
+#define USE_MQ135_TH_COMPENSATION true
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  MQ135 SIMULATION MODE
@@ -148,6 +169,40 @@ const float SIM_HUMIDITY    = 52.0;  // ← simulated %RH
 DHT dht(DHTPIN, DHTTYPE);
 unsigned long lastLogTime = 0;
 
+// ─── MQ135 HELPER MATH ──────────────────────────────────────────────────────
+float mq135ResistanceFromAdc(int adcRaw) {
+  // Keep ADC in valid range and avoid divide-by-zero near 0 Vout.
+  float adc = constrain((float)adcRaw, 1.0f, ADC_MAX_COUNTS - 1.0f);
+  float vout = (adc / ADC_MAX_COUNTS) * ADC_VREF;
+  return MQ135_RL_KOHM * ((ADC_VREF / vout) - 1.0f);  // Rs in kOhm
+}
+
+float mq135CorrectionFactor(float temperature, float humidity) {
+  // Empirical compensation shape used by common MQ135 implementations.
+  if (temperature < 20.0f) {
+    return 0.00035f * temperature * temperature
+      - 0.02718f * temperature
+      + 1.39538f
+      - 0.0018f * (humidity - 33.0f);
+  }
+  return -0.003333333f * temperature
+    + 1.233333333f
+    - 0.0018f * (humidity - 33.0f);
+}
+
+float mq135PpmFromRs(float rsKohm, float r0Kohm) {
+  float ratio = rsKohm / r0Kohm;
+  return MQ135_CO2_A * powf(ratio, MQ135_CO2_B);
+}
+
+// Optional: use this once your sensor is warmed and in known fresh-air
+// conditions to derive an initial R0 target for MQ135_R0_KOHM.
+float mq135EstimateR0FromRaw(int adcRaw) {
+  float rs = mq135ResistanceFromAdc(adcRaw);
+  float cleanAirRatio = powf(MQ135_ATMOSPHERIC_CO2_PPM / MQ135_CO2_A, 1.0f / MQ135_CO2_B);
+  return rs / cleanAirRatio;
+}
+
 // ─── CONNECT TO WIFI ─────────────────────────────────────────────────────────
 void connectWiFi() {
   Serial.print("Connecting to WiFi");
@@ -166,7 +221,7 @@ void connectWiFi() {
 }
 
 // ─── READ CO₂ (real or simulated) ───────────────────────────────────────────
-int readCO2() {
+int readCO2(float temperature, float humidity, bool dhtValid) {
   if (SIMULATE_MQ135) {
     int target = SIM_CO2_WAYPOINTS[simWaypointIndex];
 
@@ -205,14 +260,44 @@ int readCO2() {
     delay(100);
   }
   int raw = sum / MQ135_SAMPLES;
-  int ppm = raw - CO2_ZERO_OFFSET;
+  float rsKohm = mq135ResistanceFromAdc(raw);
+  float rsForCurve = rsKohm;
+
+  if (USE_MQ135_TH_COMPENSATION && dhtValid) {
+    float cf = mq135CorrectionFactor(temperature, humidity);
+    if (cf > 0.05f) {
+      rsForCurve = rsKohm / cf;
+    }
+  }
+
+  float ppmFloat = mq135PpmFromRs(rsForCurve, MQ135_R0_KOHM);
+  int ppm = (int)roundf(ppmFloat);
   if (ppm < 0) ppm = 0;
 
   Serial.print("MQ135 raw avg = ");
   Serial.print(raw);
-  Serial.print("  →  CO₂ ≈ ");
+  Serial.print("  Rs=");
+  Serial.print(rsKohm, 2);
+  Serial.print("kOhm  R0=");
+  Serial.print(MQ135_R0_KOHM, 2);
+  Serial.print("kOhm  →  CO₂ ≈ ");
   Serial.print(ppm);
   Serial.println(" ppm");
+
+  if (dhtValid) {
+    Serial.print("Compensation T/H: ");
+    Serial.print(temperature, 1);
+    Serial.print("C, ");
+    Serial.print(humidity, 1);
+    Serial.println("%");
+  }
+
+  if (millis() < 120000UL) {
+    float r0Estimate = mq135EstimateR0FromRaw(raw);
+    Serial.print("R0 hint @400ppm: ");
+    Serial.print(r0Estimate, 2);
+    Serial.println("kOhm (for tuning MQ135_R0_KOHM)");
+  }
   return ppm;
 }
 
@@ -289,6 +374,7 @@ void setup() {
   Serial.println("  Interval: " + String(USE_SECONDS ? LOG_INTERVAL_SECONDS : LOG_INTERVAL_MINUTES * 60) + (USE_SECONDS ? "s" : " min"));
   Serial.println("  MQ135 Sim: " + String(SIMULATE_MQ135 ? "ON" : "OFF"));
   Serial.println("  DHT11 Sim: " + String(SIMULATE_DHT  ? "ON" : "OFF"));
+  Serial.println("  MQ135 Model: Rs/R0 power-curve");
   Serial.println("═══════════════════════════════════════");
 
   dht.begin();
@@ -309,7 +395,7 @@ void loop() {
 
     float temperature, humidity;
     bool dhtOk = readDHT(temperature, humidity);
-    int co2 = readCO2();
+    int co2 = readCO2(temperature, humidity, dhtOk);
 
     if (dhtOk) {
       postToGoogleSheets(temperature, humidity, co2);
