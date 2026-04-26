@@ -1,3 +1,9 @@
+<p align="center">
+ <img src="demo.gif"/>
+</p>
+
+---
+
 # Documentation
 ## Relevant links
 [https://anneryeo.github.io/DS169_IOT/](url) -- DHT11 Sensor Dashboard Visualization
